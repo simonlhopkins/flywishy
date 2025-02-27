@@ -63,6 +63,7 @@ void main() {
 
     // Compute similarity using dot product
     float similarity = dot(normalize(vNormal), normalize(uDotPosition));
+    similarity = smoothstep(0.9, 1., similarity);
 
     // Create a soft circular dot effect
     float dotSize = smoothstep(0., 1.0, similarity);

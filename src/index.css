@@ -38,3 +38,8 @@ body {
   box-shadow: 1px 1px 0px #202020;
   transform: translate(2px, 2px);
 }
+
+.home-text {
+  background-color: rebeccapurple;
+  color: white;
+}

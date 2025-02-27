@@ -18,7 +18,7 @@ class ControlsManager {
     this.camera.position.z = 3;
     CameraControls.install({ THREE: THREE });
     this.controls = new CameraControls(camera, domElement);
-    // this.controls.maxPolarAngle = Math.PI / 2;
+    this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.minDistance = 0.3;
     this.controls.maxDistance = 10;
 

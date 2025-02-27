@@ -85,7 +85,7 @@ class Planet {
       0,
       1,
       0.2,
-      2
+      1
     );
     this.cityLabels.forEach((item) => {
       item.setScale(textscale);

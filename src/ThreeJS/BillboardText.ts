@@ -6,8 +6,6 @@ class BillboardText {
   sprite: THREE.Sprite;
   constructor(text: string, scene: THREE.Scene) {
     this.sprite = this.createBillboardText(text, new THREE.Vector3(0, 0, 0));
-    // this.sprite.renderOrder = 2; // Ensures it renders last
-    // this.sprite.material.depthTest = false; // Ignores depth buffer
 
     scene.add(this.sprite);
   }
@@ -31,7 +29,7 @@ class BillboardText {
     // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "#32CD32";
-    ctx.font = "36px Comic Sans MS";
+    ctx.font = "36px Verdana, sans-serif";
     ctx.textAlign = "left"; // Align text to the left
     ctx.textBaseline = "middle"; // Anchor text to the bottom
     const label = `📍${text}`;

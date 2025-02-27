@@ -22,7 +22,10 @@ function App() {
           padding: "1rem",
         }}
       >
-        <h1>fly - wishy!!</h1>
+        <h1 className="home-text">fly - wishy!!</h1>
+        <p className="home-text">🌐 scroll to zoom in and out</p>
+        <p className="home-text">👀 click and drag to look around</p>
+        <p className="home-text">🎶 click play to start the song!</p>
         <button
           className="retro-button"
           onClick={() => {

@@ -121,7 +121,7 @@ class MainScene {
         "airport_airplane_2.glb",
         (gltf) => {
           const plane = gltf.scene;
-          const planeScale = 0.005;
+          const planeScale = 0.01;
           plane.scale.set(planeScale, planeScale, planeScale);
           resolve(plane);
         },
