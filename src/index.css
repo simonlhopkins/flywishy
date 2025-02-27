@@ -1,0 +1,40 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.retro-button {
+  font-family: "Press Start 2P", cursive; /* Pixelated font */
+  font-size: 14px;
+  padding: 10px 20px;
+  margin: 10px;
+  color: #fff;
+  background: linear-gradient(to bottom, #c0c0c0, #808080); /* Metallic look */
+  border: 3px solid #404040;
+  box-shadow: 3px 3px 0px #202020;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.1s ease-in-out;
+}
+
+.retro-button:active {
+  box-shadow: 1px 1px 0px #202020;
+  transform: translate(2px, 2px);
+}
