@@ -1,14 +1,11 @@
 import * as Tone from "tone";
-import EnergyAnalyzer from "../MusicAnalyzers/EnergyAnalyzer";
 import { Util } from "../Util";
 import * as THREE from "three";
-import { error } from "console";
 import BinAnalyzer from "../MusicAnalyzers/BinAnalyzer";
 
 class MusicTextureManager {
   private fft: Tone.FFT = new Tone.FFT(1024);
   private audioNode: MediaElementAudioSourceNode | null = null;
-  private initialized = false;
   private bassAnalyzer: BinAnalyzer = new BinAnalyzer();
   public lowMidAnalyzer: BinAnalyzer = new BinAnalyzer();
   public midAnalyzer: BinAnalyzer = new BinAnalyzer();

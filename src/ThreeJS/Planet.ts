@@ -140,15 +140,15 @@ class Planet {
       UP,
       endPos.clone().normalize()
     );
-    const dot = q1.clone().dot(q2);
+    // const dot = q1.clone().dot(q2);
 
     // Clamp the dot product to avoid NaN due to precision issues
-    const clampedDot = Math.max(-1, Math.min(1, dot));
+    // const clampedDot = Math.max(-1, Math.min(1, dot));
 
     // Calculate the angle using arccos
-    const angle = Math.acos(clampedDot);
-    const velocityScale = 10000;
-    const constTime = angle * velocityScale;
+    // const angle = Math.acos(clampedDot);
+    // const velocityScale = 10000;
+    // const constTime = angle * velocityScale;
     this.tweenManager.add(
       new Tween(progress)
         .to({ value: 1 }, 5000)

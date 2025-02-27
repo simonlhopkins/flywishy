@@ -38,11 +38,7 @@ class BillboardText {
     return new THREE.CanvasTexture(canvas);
   }
   setScale(scale: number) {
-    const scaleMod = this.sprite.scale.set(
-      (this.width / this.height) * scale,
-      scale,
-      scale
-    );
+    this.sprite.scale.set((this.width / this.height) * scale, scale, scale);
   }
 
   createBillboardText(text: string, position: THREE.Vector3) {
