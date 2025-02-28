@@ -1,7 +1,18 @@
 import { useEffect, useRef } from "react";
 import "./App.css";
 import MainScene from "./ThreeJS/MainScene";
+import Menu from "./Components/Menu";
+import MusicControls from "./Components/MusicControls";
+import { Util } from "./Util";
 
+export interface MenuCallbacks {
+  play(): void;
+  pause(): void;
+  upateVideoSource(newSource: string): void;
+  reset(): void;
+  lookAtGlobe(): void;
+  lookAtPlane(): void;
+}
 function App() {
   const sceneRef = useRef<MainScene>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,6 +22,33 @@ function App() {
       sceneRef.current = new MainScene(videoRef.current!);
     }
   }, []);
+  const callbacks: MenuCallbacks = {
+    play() {
+      videoRef.current!.play();
+    },
+    pause() {
+      videoRef.current!.pause();
+    },
+    upateVideoSource(newSource: string) {
+      const video = videoRef.current;
+      if (video) {
+        video.src = newSource;
+        sceneRef.current!.reset();
+        videoRef.current!.currentTime = 0;
+      }
+    },
+    reset() {
+      sceneRef.current!.reset();
+      videoRef.current!.currentTime = 0;
+      videoRef.current!.play();
+    },
+    lookAtGlobe() {
+      sceneRef.current!.lookAtGlobe();
+    },
+    lookAtPlane() {
+      sceneRef.current!.lookAtPlane();
+    },
+  };
   return (
     <>
       <video
@@ -20,61 +58,8 @@ function App() {
         ref={videoRef}
         src="./video/flyVideoSmall.mp4"
       ></video>
-      <div
-        style={{
-          position: "absolute",
-          left: "0px",
-          top: "0px",
-          padding: "1rem",
-        }}
-      >
-        <h1 className="home-text">fly - wishy!!</h1>
-        <p className="home-text">🌐 scroll to zoom in and out</p>
-        <p className="home-text">👀 click and drag to look around</p>
-        <p className="home-text">🎶 click play to start the song!</p>
-        <button
-          className="retro-button"
-          onClick={() => {
-            videoRef.current!.play();
-          }}
-        >
-          play
-        </button>
-        <button
-          className="retro-button"
-          onClick={() => {
-            videoRef.current!.pause();
-          }}
-        >
-          pause
-        </button>
-        <button
-          className="retro-button"
-          onClick={() => {
-            sceneRef.current!.reset();
-            videoRef.current!.currentTime = 0;
-            videoRef.current!.play();
-          }}
-        >
-          reset
-        </button>
-        <button
-          className="retro-button"
-          onClick={() => {
-            sceneRef.current!.lookAtGlobe();
-          }}
-        >
-          look at globe
-        </button>
-        <button
-          className="retro-button"
-          onClick={() => {
-            sceneRef.current!.lookAtPlane();
-          }}
-        >
-          look at plane
-        </button>
-      </div>
+      <Menu callbacks={callbacks} />
+      <MusicControls getVideoElement={() => videoRef.current} />
       <div id="flyWishy"></div>
     </>
   );

@@ -41,7 +41,7 @@ class Planet {
     this.planeMesh = planeMesh;
     this.atmosphere = new Atmosphere(this.scene, this);
     this.musicTextureManager = musicTextureManager;
-    const geometry = new THREE.SphereGeometry(this.radius, 32 * 2, 16 * 2);
+    const geometry = new THREE.SphereGeometry(this.radius, 32, 16);
     this.planetMaterial = planetMaterial;
     this.planetMesh = new THREE.Mesh(geometry, this.planetMaterial);
     //debug
@@ -122,7 +122,6 @@ class Planet {
     this.endCity = this.chooseRandom(
       cities.filter((city) => city.city != this.startCity.city)
     );
-    console.log(this.startCity.city + "=>" + this.endCity.city);
     const startPos = this.getPosOnPlanetFromCity(this.startCity);
     const endPos = this.getPosOnPlanetFromCity(this.endCity);
     this.planeMesh.position.copy(startPos);
@@ -134,7 +133,16 @@ class Planet {
       UP,
       endPos.clone().normalize()
     );
-    // const dot = q1.clone().dot(q2);
+    const dot = Math.max(
+      -1,
+      Math.min(1, startPos.normalize().dot(endPos.normalize()))
+    );
+    let angle = Math.acos(dot);
+    console.log(
+      `${this.startCity.city}=>${this.endCity.city} with arc length ${angle}`
+    );
+    const normalizedArcLength = Util.mapRange(angle, 0, Math.PI, 0, 1);
+    const time = Util.mapRange(normalizedArcLength, 0, 1, 2000, 5000);
 
     // Clamp the dot product to avoid NaN due to precision issues
     // const clampedDot = Math.max(-1, Math.min(1, dot));
@@ -147,7 +155,7 @@ class Planet {
 
     this.tweenManager.add(
       new Tween(progress)
-        .to({ value: 1 }, 5000)
+        .to({ value: 1 }, time)
         .onUpdate(() => {
           this.updatePlanePos(q1, q2, progress.value);
         })

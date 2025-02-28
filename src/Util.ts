@@ -12,6 +12,10 @@ export class Util {
     return ((value - inMin) * outRange) / inRange + outMin;
   }
 
+  static randomInRange(low: number, high: number) {
+    return Util.mapRange(Math.random(), 0, 1, low, high);
+  }
+
   static mapRangeClamped(
     value: number,
     inMin: number,

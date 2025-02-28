@@ -120,7 +120,6 @@ class MusicTextureManager {
     const mid = this.getAverageEnergy(fft, 400, 2600);
     const highMid = this.getAverageEnergy(fft, 2600, 5200);
     const treble = this.getAverageEnergy(fft, 5200, 14000);
-    console.log(bass);
     addPointToBin(this.bassAnalyzer, bass);
     addPointToBin(this.lowMidAnalyzer, lowMid);
     addPointToBin(this.midAnalyzer, mid);

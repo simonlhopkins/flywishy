@@ -14,10 +14,12 @@
     "@tweenjs/tween.js": "^25.0.0",
     "@types/three": "^0.173.0",
     "camera-controls": "^2.10.0",
+    "clsx": "^2.1.1",
     "country-code-emoji": "^2.3.0",
     "csv-parser": "^3.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "styled-components": "^6.1.15",
     "three": "^0.173.0",
     "tone": "^15.0.4"
   },
