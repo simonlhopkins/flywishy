@@ -22,7 +22,6 @@ class MusicTextureManager {
       await Tone.start();
       console.log("Tone.js started!");
       this.videoElement.muted = false;
-      this.videoElement.play();
       this.audioNode = Tone.getContext().createMediaElementSource(
         this.videoElement
       );
