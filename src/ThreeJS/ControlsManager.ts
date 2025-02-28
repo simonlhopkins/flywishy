@@ -36,8 +36,8 @@ class ControlsManager implements IControlsManager {
     this.controls.minDistance = 0.3;
     this.controls.maxDistance = 10;
     this.controls.mouseButtons.right = CameraControls.ACTION.NONE;
-    this.controls.touches.two = CameraControls.ACTION.TOUCH_ZOOM;
-
+    this.controls.touches.two = CameraControls.ACTION.TOUCH_DOLLY;
+    this.controls.touches.three = CameraControls.ACTION.NONE;
     this.controls.rotateTo(0.5022233669230078, 0.7739323347923857);
     this.initControlsEventListeners();
     this.lookAtPlane();
