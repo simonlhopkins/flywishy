@@ -52,6 +52,7 @@ function App() {
   return (
     <>
       <video
+        preload="metadata"
         autoPlay={false}
         hidden
         playsInline

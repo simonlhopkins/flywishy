@@ -56,8 +56,10 @@ function Menu({ callbacks }: Props) {
           </p>
           <video
             controls
+            playsInline
+            preload="metadata"
             src="./video/sourceVideo.mp4"
-            style={{ float: "right" }}
+            style={{ float: "right", maxWidth: "50%" }}
           ></video>
           <p>
             This visualizer can actually be used for ANY song you want. You can
