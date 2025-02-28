@@ -54,6 +54,11 @@ function Menu({ callbacks }: Props) {
             and I was like damn this would actually be sort of a sick
             visualizer.
           </p>
+          <video
+            controls
+            src="./video/sourceVideo.mp4"
+            style={{ float: "right" }}
+          ></video>
           <p>
             This visualizer can actually be used for ANY song you want. You can
             select what song you want to use in the dropdown menu here
@@ -119,6 +124,13 @@ function Menu({ callbacks }: Props) {
             god, idk. I would say it is not really all that fun to use, but it
             sure works!
           </p>
+          <h3>other ideas I had</h3>
+          <ul>
+            <li>have the city labels be the current lyrics of the song</li>
+            <li>custom plane 3D model</li>
+            <li>more things orbiting the world</li>
+            <li>be able to upload your own video</li>
+          </ul>
         </div>
       </div>
     </StyledWrapper>
