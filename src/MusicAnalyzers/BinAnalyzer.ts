@@ -43,7 +43,10 @@ class BinAnalyzer {
     };
   }
   public getCurrentNormalizedEnergy() {
-    return Util.mapRangeClamped(this.current, this.min, this.max, 0, 1);
+    if (Number.isFinite(this.min) && Number.isFinite(this.max)) {
+      return Util.mapRangeClamped(this.current, this.min, this.max, 0, 1);
+    }
+    return 0;
   }
   public resetMinMax() {
     this.min = Infinity;

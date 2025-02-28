@@ -17,20 +17,21 @@ class MusicTextureManager {
   private videoElement: HTMLVideoElement;
   constructor(videoElement: HTMLVideoElement) {
     this.videoElement = videoElement;
-    this.audioNode = Tone.getContext().createMediaElementSource(
-      this.videoElement
-    );
-    Tone.connect(this.audioNode, this.fft);
-    this.fft.toDestination();
 
-    const startTone = () => {
-      if (Tone.getContext().state !== "running") {
-        Tone.start()
-          .then(() => {
-            console.log("Tone.js started!");
-          })
-          .catch((err) => console.error("Tone.js failed to start:", err));
-      }
+    const startTone = async () => {
+      await Tone.start();
+      console.log("Tone.js started!");
+      this.videoElement.muted = false;
+      this.videoElement.play();
+      this.audioNode = Tone.getContext().createMediaElementSource(
+        this.videoElement
+      );
+
+      console.log(this.audioNode);
+      Tone.connect(this.audioNode, this.fft);
+      Tone.connect(this.fft, Tone.getDestination());
+      this.fft.toDestination();
+
       // Remove the event listener after Tone.js starts
       window.removeEventListener("click", startTone);
     };
@@ -63,6 +64,11 @@ class MusicTextureManager {
   }
   getFFTValues() {
     return this.fft.getValue();
+  }
+  public getBinValues() {
+    return this.getAnalyzers().map((analyzer) =>
+      analyzer.getCurrentNormalizedEnergy()
+    );
   }
   private getAnalyzers(): BinAnalyzer[] {
     return [
@@ -115,7 +121,7 @@ class MusicTextureManager {
     const mid = this.getAverageEnergy(fft, 400, 2600);
     const highMid = this.getAverageEnergy(fft, 2600, 5200);
     const treble = this.getAverageEnergy(fft, 5200, 14000);
-
+    console.log(bass);
     addPointToBin(this.bassAnalyzer, bass);
     addPointToBin(this.lowMidAnalyzer, lowMid);
     addPointToBin(this.midAnalyzer, mid);

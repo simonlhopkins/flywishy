@@ -5,8 +5,9 @@ import BillboardText from "./BillboardText";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import { Util } from "../Util";
+import ThreeJSUtils from "./ThreeJSUtils";
+import Atmosphere from "./Atmosphere";
 
-const PLANET_RADIUS = 4;
 const UP = new THREE.Vector3(0, 1, 0);
 
 class Planet {
@@ -19,10 +20,12 @@ class Planet {
   debugPoint: THREE.Mesh;
   private tweenManager: TweenManager;
   cityLabels: BillboardText[] = [];
-  raycaster = new THREE.Raycaster();
+  private raycaster = new THREE.Raycaster();
   cityArr: CityData[] = [];
   private planetMaterial: THREE.ShaderMaterial;
   private musicTextureManager: MusicTextureManager;
+  private atmosphere: Atmosphere;
+  private radius = 4;
   constructor(
     scene: THREE.Scene,
     camera: THREE.Camera,
@@ -36,8 +39,9 @@ class Planet {
     this.camera = camera;
     this.tweenManager = tweenManager;
     this.planeMesh = planeMesh;
+    this.atmosphere = new Atmosphere(this.scene, this);
     this.musicTextureManager = musicTextureManager;
-    const geometry = new THREE.SphereGeometry(PLANET_RADIUS, 32 * 2, 16 * 2);
+    const geometry = new THREE.SphereGeometry(this.radius, 32 * 2, 16 * 2);
     this.planetMaterial = planetMaterial;
     this.planetMesh = new THREE.Mesh(geometry, this.planetMaterial);
     //debug
@@ -46,22 +50,17 @@ class Planet {
     this.scene.add(this.planetMesh);
 
     //testing out slerp
-    this.debugPoint = this.createPoint();
+    this.debugPoint = ThreeJSUtils.CreateSphere();
+    this.scene.add(this.debugPoint);
 
-    // cities.forEach((item) => {
-    //   const newPoint = this.createPoint();
-    //   const pos = this.getPosOnPlanetFromCity(item);
-    //   newPoint.position.set(pos.x, pos.y, pos.z);
-    //   this.scene.add(newPoint);
-    // });
     cities.forEach((item) => {
-      const label = `${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
+      const label = `📍${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
         item.iso2
       )}`;
       const newText = new BillboardText(label, scene);
       this.cityLabels.push(newText);
       const pos = Planet.latLonToUnitVector(item.lat, item.lng);
-      newText.setPosition(pos.multiplyScalar(PLANET_RADIUS));
+      newText.setPosition(pos.multiplyScalar(this.radius));
     });
 
     this.startCity = cities[0];
@@ -80,7 +79,7 @@ class Planet {
     this.createPlaneTween(cities);
   }
   public updateZoomScale(zoom: number) {
-    const textscale = Util.mapRange(
+    const textScale = Util.mapRange(
       THREE.MathUtils.smoothstep(zoom, 0, 0.5),
       0,
       1,
@@ -88,7 +87,7 @@ class Planet {
       1
     );
     this.cityLabels.forEach((item) => {
-      item.setScale(textscale);
+      item.setScale(textScale);
     });
   }
 
@@ -102,16 +101,9 @@ class Planet {
 
   private getPosOnPlanetFromCity(city: CityData) {
     return Planet.latLonToUnitVector(city.lat, city.lng).multiplyScalar(
-      PLANET_RADIUS
+      this.radius
     );
   }
-  private createPoint(): THREE.Mesh {
-    const geometry = new THREE.SphereGeometry(0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-    return new THREE.Mesh(geometry, material);
-  }
-
   getPlanePos() {
     return this.planeMesh.position.clone();
   }
@@ -122,8 +114,10 @@ class Planet {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  getRadius() {
+    return this.radius;
+  }
   createPlaneTween(cities: CityData[]) {
-    const progress = { value: 0 };
     this.startCity = this.endCity;
     this.endCity = this.chooseRandom(
       cities.filter((city) => city.city != this.startCity.city)
@@ -149,6 +143,8 @@ class Planet {
     // const angle = Math.acos(clampedDot);
     // const velocityScale = 10000;
     // const constTime = angle * velocityScale;
+    const progress = { value: 0 };
+
     this.tweenManager.add(
       new Tween(progress)
         .to({ value: 1 }, 5000)
@@ -185,7 +181,7 @@ class Planet {
         smoothstepProgress < 0.5
           ? THREE.MathUtils.smootherstep(smoothstepProgress, 0, 0.2)
           : 1 - THREE.MathUtils.smootherstep(smoothstepProgress, 0.7, 1);
-      r = Util.mapRange(r, 0, 1, PLANET_RADIUS, PLANET_RADIUS + 0.5);
+      r = Util.mapRange(r, 0, 1, this.radius, this.radius + 0.5);
 
       const slerpedQ = q1.clone().slerp(q2, smoothstepProgress);
       const point = UP.clone().applyQuaternion(slerpedQ).multiplyScalar(r);
@@ -222,12 +218,21 @@ class Planet {
       this.planeMesh.quaternion.slerp(targetQuaternion, 0.1);
     }
   }
-
-  update(_elapsedTime: number, _deltaTime: number) {
-    this.planetMaterial.uniforms.uTime.value = _elapsedTime;
+  update(elapsedTime: number, deltaTime: number) {
+    //uniforms
+    this.planetMaterial.uniforms.uTime.value = elapsedTime;
     this.planetMaterial.uniforms.uDotPosition.value.copy(
       this.getPlanePos().normalize()
     );
+    this.planetMaterial.uniforms.uEnergyHistory.value =
+      this.musicTextureManager.getTexture();
+
+    this.atmosphere.update(
+      elapsedTime,
+      deltaTime,
+      this.musicTextureManager.getBinValues()
+    );
+    //cities
     this.cityLabels.forEach((billboardCity) => {
       const direction = new THREE.Vector3();
       direction
@@ -241,9 +246,6 @@ class Planet {
         billboardCity.setVisible(true);
       }
     });
-
-    this.planetMaterial.uniforms.uEnergyHistory.value =
-      this.musicTextureManager.getTexture();
   }
 }
 

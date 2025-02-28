@@ -32,8 +32,7 @@ class BillboardText {
     ctx.font = "36px Verdana, sans-serif";
     ctx.textAlign = "left"; // Align text to the left
     ctx.textBaseline = "middle"; // Anchor text to the bottom
-    const label = `📍${text}`;
-    ctx.fillText(label, canvas.width / 2 - 20, canvas.height / 2);
+    ctx.fillText(text, canvas.width / 2 - 20, canvas.height / 2);
 
     return new THREE.CanvasTexture(canvas);
   }

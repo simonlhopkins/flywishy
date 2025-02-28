@@ -3,12 +3,13 @@ import Planet from "./Planet";
 import TweenManager from "./TweenManager";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-import ControlsManager from "./ControlsManager";
+import ControlsManager, { IControlsManager } from "./ControlsManager";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 
 class MainScene {
   musicTextureManager: MusicTextureManager;
+  controlsManager: IControlsManager | null = null;
   constructor(video: HTMLVideoElement) {
     this.musicTextureManager = new MusicTextureManager(video);
     const width = window.innerWidth;
@@ -27,7 +28,6 @@ class MainScene {
 
     window.addEventListener("resize", () => {
       // Update camera aspect ratio
-      console.log("hello!!!");
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
 
@@ -65,8 +65,10 @@ class MainScene {
     const controlsManager = new ControlsManager(
       planet,
       camera,
+      tweenManager,
       renderer.domElement
     );
+    this.controlsManager = controlsManager;
 
     const clock = new THREE.Clock();
 
@@ -85,13 +87,23 @@ class MainScene {
     };
     renderer.setAnimationLoop(animate);
   }
+  lookAtPlane() {
+    if (this.controlsManager) {
+      this.controlsManager.lookAtPlane();
+    }
+  }
+  lookAtGlobe() {
+    if (this.controlsManager) {
+      this.controlsManager.lookAtGlobe();
+    }
+  }
   reset() {
     this.musicTextureManager.reset();
   }
 
   async CreatePlanetMaterial() {
     const texture = new THREE.TextureLoader().load(
-      "./images/8k_earth_daymap.jpg"
+      "./images/8k_earth_daymap_small.jpg"
     );
     const noiseTexture = new THREE.TextureLoader().load(
       "./images/noiseTexture.png"

@@ -13,7 +13,13 @@ function App() {
   }, []);
   return (
     <>
-      <video hidden ref={videoRef} src="./video/flyVideo.mp4"></video>
+      <video
+        autoPlay={false}
+        hidden
+        playsInline
+        ref={videoRef}
+        src="./video/flyVideoSmall.mp4"
+      ></video>
       <div
         style={{
           position: "absolute",
@@ -51,6 +57,22 @@ function App() {
           }}
         >
           reset
+        </button>
+        <button
+          className="retro-button"
+          onClick={() => {
+            sceneRef.current!.lookAtGlobe();
+          }}
+        >
+          look at globe
+        </button>
+        <button
+          className="retro-button"
+          onClick={() => {
+            sceneRef.current!.lookAtPlane();
+          }}
+        >
+          look at plane
         </button>
       </div>
       <div id="flyWishy"></div>
