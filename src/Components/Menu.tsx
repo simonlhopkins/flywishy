@@ -130,6 +130,14 @@ function Menu({ callbacks }: Props) {
             <li>custom plane 3D model</li>
             <li>more things orbiting the world</li>
             <li>be able to upload your own video</li>
+            <li>
+              make the UI look like the inflight tv UI (watch movies, page
+              flight attendant, etc)
+            </li>
+            <li>
+              when idle, have the camera smoothly move around the plane for more
+              interesting visuals
+            </li>
           </ul>
         </div>
       </div>
