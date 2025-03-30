@@ -14,8 +14,8 @@ class MusicTextureManager {
 
   energyHistory: number[][] = [];
   private texture = this.createEnergyHistoryTexture();
-  private videoElement: HTMLVideoElement;
-  constructor(videoElement: HTMLVideoElement) {
+  private videoElement: HTMLMediaElement;
+  constructor(videoElement: HTMLMediaElement) {
     this.videoElement = videoElement;
 
     const startTone = async () => {

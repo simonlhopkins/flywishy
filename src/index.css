@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,6 +11,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ios stuff */
+  --navigation-bar-gradient: linear-gradient(
+    #c1d1e4 0%,
+    #a1b2c9 33%,
+    #758cab 67%,
+    #557094 100% /* Blue at 100% */
+  );
 }
 
 body {
@@ -19,27 +27,140 @@ body {
   min-height: 100vh;
 }
 
-.retro-button {
-  font-family: "Press Start 2P", cursive; /* Pixelated font */
-  font-size: 14px;
-  padding: 10px 20px;
-  margin: 10px;
-  color: #fff;
-  background: linear-gradient(to bottom, #c0c0c0, #808080); /* Metallic look */
-  border: 3px solid #404040;
-  box-shadow: 3px 3px 0px #202020;
-  text-transform: uppercase;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.1s ease-in-out;
+/* iOS 6 styling things */
+
+.ios-navigationBar {
+  background: var(--navigation-bar-gradient);
+  box-shadow: inset 0 0.5px 0 0 rgba(255, 255, 255, 0.6),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.3),
+    0 -1px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
-.retro-button:active {
-  box-shadow: 1px 1px 0px #202020;
-  transform: translate(2px, 2px);
+.ios-button {
+  height: 3rem;
+  border-radius: 10px;
+  border-width: 0;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  background: linear-gradient(
+    #a2b2c9 0%,
+    #798eac 33%,
+    #506d94 67%,
+    #405f8a 100% /* Blue at 100% */
+  );
+  box-shadow: inset 0 0 1px 0 rgba(0, 0, 0, 1),
+    inset 0 1px 0.5px 0 rgba(0, 0, 0, 0.4),
+    0 0.5px 0.5px 0 rgba(255, 255, 255, 0.4);
+  padding: 10px;
 }
 
-.home-text {
-  background-color: rebeccapurple;
-  color: white;
+.ios-button img {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: auto;
+}
+
+.ios-button:active {
+  filter: brightness(0.7);
+}
+
+.ios-text {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.ios-segmentedControl {
+  display: inline-flex;
+  width: 200px;
+}
+.ios-segmentedControl button {
+  width: 50%;
+}
+.ios-segmentedControl button.inactive {
+  background: linear-gradient(
+    #b1c1d5 0%,
+    #91a3bb 33%,
+    #728aa9 67%,
+    #607da0 100%
+  );
+}
+.ios-segmentedControl button:first-child {
+  border-top-right-radius: 0; /* Upper-left corner */
+  border-bottom-right-radius: 0; /* Lower-left corner */
+}
+.ios-segmentedControl button:nth-child(2) {
+  border-top-left-radius: 0; /* Upper-left corner */
+  border-bottom-left-radius: 0; /* Lower-left corner */
+}
+
+.ios-modal {
+  background-color: rgba(8, 26, 80, 0.8);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  padding: 8px;
+  box-shadow: 0 0 0.5px 1px rgba(0, 0, 0, 0.4), 0 4px 5px 0px rgba(0, 0, 0, 0.5);
+  width: 300px;
+}
+.ios-modal input {
+  background: white;
+  color: black;
+  width: 100%;
+  padding: 4px;
+  font-size: 1.4rem;
+  box-sizing: border-box;
+  box-shadow: 0 1px 0px 0px rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(0, 0, 0, 1), inset 0 2px 2px 0px rgba(0, 0, 0, 0.4);
+  border: 0px;
+}
+.ios-modal[open] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.ios-modal:open::backdrop {
+  background-color: rgb(0, 0, 0, 0.5);
+}
+.ios-modal h1 {
+  font-size: 2rem;
+  margin: 0px;
+}
+.ios-modal p {
+  font-weight: normal;
+  font-size: 1rem;
+  margin: 0px;
+}
+.ios-modal button {
+  pointer-events: all;
+
+  background: linear-gradient(
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  width: 100%;
+  box-shadow: 0 0.5px 0.5px 0px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+.ios-modal button.primary {
+  /* pointer-events: none; */
+  background: linear-gradient(
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+.ios-button:disabled {
+  color: inherit;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.ios-modal .gloss {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
 }

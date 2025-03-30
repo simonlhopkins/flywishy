@@ -6,8 +6,8 @@ import TweenManager from "./TweenManager";
 import { Easing, Tween } from "@tweenjs/tween.js";
 
 export interface IControlsManager {
-  lookAtPlane(): void;
-  lookAtGlobe(): void;
+  lookAtPlane(): Promise<void>;
+  lookAtGlobe(): Promise<void>;
 }
 
 class ControlsManager implements IControlsManager {
@@ -76,40 +76,49 @@ class ControlsManager implements IControlsManager {
 
   public lookAtPlane() {
     const beginningDistance = this.controls.distance;
-
-    this.tweenManager.add(
-      new Tween(this.lookAtPlanePercent)
-        .to({ value: 1 }, 1000)
-        .onUpdate(() => {
-          this.controls.distance = Util.mapRange(
-            this.lookAtPlanePercent.value,
-            0,
-            1,
-            beginningDistance,
-            2
-          );
-        })
-        .easing(Easing.Sinusoidal.InOut)
-    );
+    return new Promise<void>((res) => {
+      this.tweenManager.add(
+        new Tween(this.lookAtPlanePercent)
+          .to({ value: 1 }, 1000)
+          .onUpdate(() => {
+            this.controls.distance = Util.mapRange(
+              this.lookAtPlanePercent.value,
+              0,
+              1,
+              beginningDistance,
+              2
+            );
+          })
+          .easing(Easing.Sinusoidal.InOut)
+          .onComplete(() => {
+            res();
+          })
+      );
+    });
   }
   public lookAtGlobe() {
     //todo, maybe save the plane pos and quat at this point, so it is more smooth
     this.globeQuat = this.planet.getPlaneQuaternion();
     const beginningDistance = this.controls.distance;
-    this.tweenManager.add(
-      new Tween(this.lookAtPlanePercent)
-        .to({ value: 0 }, 1000)
-        .onUpdate(() => {
-          this.controls.distance = Util.mapRange(
-            1 - this.lookAtPlanePercent.value,
-            0,
-            1,
-            beginningDistance,
-            10
-          );
-        })
-        .easing(Easing.Sinusoidal.InOut)
-    );
+    return new Promise<void>((res) => {
+      this.tweenManager.add(
+        new Tween(this.lookAtPlanePercent)
+          .to({ value: 0 }, 1000)
+          .onUpdate(() => {
+            this.controls.distance = Util.mapRange(
+              1 - this.lookAtPlanePercent.value,
+              0,
+              1,
+              beginningDistance,
+              10
+            );
+          })
+          .easing(Easing.Sinusoidal.InOut)
+          .onComplete(() => {
+            res();
+          })
+      );
+    });
   }
 
   private rotateToRandomAngle() {

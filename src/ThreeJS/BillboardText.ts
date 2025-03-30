@@ -6,8 +6,6 @@ class BillboardText {
   sprite: THREE.Sprite;
   constructor(text: string, scene: THREE.Scene) {
     this.sprite = this.createBillboardText(text, new THREE.Vector3(0, 0, 0));
-
-    scene.add(this.sprite);
   }
 
   setVisible(isVisible: boolean) {
@@ -40,7 +38,7 @@ class BillboardText {
     this.sprite.scale.set((this.width / this.height) * scale, scale, scale);
   }
 
-  createBillboardText(text: string, position: THREE.Vector3) {
+  private createBillboardText(text: string, position: THREE.Vector3) {
     const texture = this.createTextTexture(text);
     const material = new THREE.SpriteMaterial({
       map: texture,

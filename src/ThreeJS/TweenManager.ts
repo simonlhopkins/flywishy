@@ -8,6 +8,16 @@ class TweenManager {
     this.group.add(tween);
     tween.start();
   }
+  pause() {
+    this.group.getAll().forEach((tween) => {
+      tween.pause();
+    });
+  }
+  resume() {
+    this.group.getAll().forEach((tween) => {
+      tween.resume();
+    });
+  }
   update() {
     this.group.update();
   }

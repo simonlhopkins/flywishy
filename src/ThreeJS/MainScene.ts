@@ -6,57 +6,131 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import ControlsManager, { IControlsManager } from "./ControlsManager";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
+import Stats from "three/examples/jsm/libs/stats.module.js";
+import Hls from "hls.js";
+import { resolve } from "path";
 
 class MainScene {
   musicTextureManager: MusicTextureManager;
   controlsManager: IControlsManager | null = null;
-  constructor(video: HTMLVideoElement) {
+  stats = new Stats();
+  private video: HTMLVideoElement;
+  private iframePlayer: YT.Player | null = null;
+  private tweenManager = new TweenManager();
+  constructor(
+    video: HTMLVideoElement,
+    iframeParent: HTMLDivElement,
+    onReady?: () => void
+  ) {
     this.musicTextureManager = new MusicTextureManager(video);
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    this.video = video;
+    const parentDiv = document.getElementById("flyWishy")!;
     const scene = new THREE.Scene();
+    // const planeScene = new THREE.Scene();
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     scene.add(light);
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(width, height);
-    document.getElementById("flyWishy")!.appendChild(renderer.domElement);
-    const texture = new THREE.TextureLoader().load(
-      "./images/your_name_clouds.jpg"
+    // planeScene.add(light);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      parentDiv.clientWidth / parentDiv.clientHeight,
+      0.1,
+      1000
     );
-    scene.background = texture;
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+    });
+    renderer.setSize(parentDiv.clientWidth, parentDiv.clientHeight);
+    parentDiv.appendChild(renderer.domElement);
+    parentDiv.appendChild(this.stats.dom);
 
     window.addEventListener("resize", () => {
+      const parentDiv = document.getElementById("flyWishy")!;
       // Update camera aspect ratio
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = parentDiv.clientWidth / parentDiv.clientHeight;
       camera.updateProjectionMatrix();
 
       // Update renderer size
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(parentDiv.clientWidth, parentDiv.clientHeight);
+
       renderer.setPixelRatio(window.devicePixelRatio); // Maintain sharpness on high-DPI screens
     });
-
     //async init function then we can update the scene after everything is loaded
-    this.initialize(scene, camera, renderer, video);
+    this.initialize(scene, camera, renderer, video, iframeParent).then(onReady);
+  }
+
+  private initializeIframe(element: HTMLDivElement): Promise<YT.Player> {
+    return new Promise<YT.Player>((res, rej) => {
+      const player = new YT.Player(element, {
+        videoId: "uKu6TFNjkNc",
+        playerVars: {
+          rel: 0,
+          mute: 1,
+        },
+        events: {
+          onReady: () => {
+            res(player);
+          },
+          onError: () => {
+            rej("error loading iFrame");
+          },
+          onStateChange: () => {},
+        },
+      });
+    });
+  }
+
+  private initializeHLSStream(element: HTMLMediaElement) {
+    const url = "https://d1d621jepmseha.cloudfront.net/wishyStream/video.m3u8";
+    console.log("initialize stream");
+    const initializeCurrentTime = () => {
+      console.log("current time::");
+      const duration = element.duration; // Duration of the video
+      console.log(duration);
+      const currentTime = Date.now() / 1000; // Current time in seconds (Unix timestamp)
+      const timeToSet = currentTime % duration; // Modulo to get time within the duration
+
+      element.currentTime = timeToSet; // Set the current time of the stream
+    };
+    element.addEventListener("loadedmetadata", function () {
+      // element.play();
+      initializeCurrentTime();
+    });
+    if (Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(element);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        // element.play();
+        console.log("parsed");
+      });
+    } else if (element.canPlayType("application/vnd.apple.mpegurl")) {
+      element.src = url;
+      element.addEventListener("loadedmetadata", function () {
+        // element.play();
+      });
+    }
   }
 
   private async initialize(
     scene: THREE.Scene,
     camera: THREE.PerspectiveCamera,
     renderer: THREE.WebGLRenderer,
-    video: HTMLVideoElement
+    video: HTMLVideoElement,
+    iframeParent: HTMLDivElement
   ) {
-    const tweenManager = new TweenManager();
+    this.initializeHLSStream(video);
 
+    const size = new THREE.Vector2();
+    renderer.getSize(size);
+    this.iframePlayer = await this.initializeIframe(iframeParent);
     const cities = await this.LoadCities();
     const planeModel = await this.LoadPlaneModel();
     const planetMaterial = await this.CreatePlanetMaterial();
-    scene.background = new THREE.VideoTexture(video);
 
     const planet = new Planet(
       scene,
       camera,
-      tweenManager,
+      this.tweenManager,
       this.musicTextureManager,
       planetMaterial,
       planeModel,
@@ -65,7 +139,7 @@ class MainScene {
     const controlsManager = new ControlsManager(
       planet,
       camera,
-      tweenManager,
+      this.tweenManager,
       renderer.domElement
     );
     this.controlsManager = controlsManager;
@@ -77,24 +151,45 @@ class MainScene {
     const animate = () => {
       const deltaTime = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
+      renderer.autoClear = false;
+      renderer.clear();
+
       renderer.render(scene, camera);
-      controlsManager.update(elapsedTime, deltaTime);
+      renderer.clearDepth();
+      // renderer.render(planeScene, camera);
       this.musicTextureManager.update(elapsedTime, deltaTime);
       planet.update(elapsedTime, deltaTime);
       planet.updateZoomScale(controlsManager.GetZoomLevel());
 
-      tweenManager.update();
+      this.tweenManager.update();
+      //this needs to happen last!!
+      controlsManager.update(elapsedTime, deltaTime);
+      this.stats.update();
     };
     renderer.setAnimationLoop(animate);
   }
-  lookAtPlane() {
+  public play() {
+    if (this.iframePlayer) {
+      this.iframePlayer.playVideo();
+    }
+    this.tweenManager.resume();
+    this.video.play();
+  }
+  public pause() {
+    if (this.iframePlayer) {
+      this.iframePlayer.pauseVideo();
+    }
+    this.tweenManager.pause();
+    this.video.pause();
+  }
+  async lookAtPlane() {
     if (this.controlsManager) {
-      this.controlsManager.lookAtPlane();
+      await this.controlsManager.lookAtPlane();
     }
   }
-  lookAtGlobe() {
+  async lookAtGlobe() {
     if (this.controlsManager) {
-      this.controlsManager.lookAtGlobe();
+      await this.controlsManager.lookAtGlobe();
     }
   }
   reset() {

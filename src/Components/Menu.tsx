@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { useState } from "react";
 import styled from "styled-components";
-import { MenuCallbacks } from "../App";
+import { ButtonCallbacks } from "../App";
 
 interface Props {
-  callbacks: MenuCallbacks;
+  callbacks: ButtonCallbacks;
 }
 
 function Menu({ callbacks }: Props) {

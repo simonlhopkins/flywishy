@@ -1,73 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { MenuCallbacks } from "../App";
+import { ButtonCallbacks } from "../App";
 import styled from "styled-components";
+import useStore from "../Store/store";
 
-interface Props {
-  getVideoElement(): HTMLVideoElement | null;
-}
-function MusicControls({ getVideoElement }: Props) {
+interface Props {}
+function MusicControls() {
   const [sliderValue, setSliderValue] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { setIsPlaying, isPlaying } = useStore();
+
   // Sync slider with video time
-  const handleVideoTimeUpdate = () => {
-    const video = getVideoElement();
 
-    if (video) {
-      if (Number.isFinite(video.duration)) {
-        const value = (video.currentTime / video.duration) * 100;
-        setSliderValue(value);
-      } else {
-        setSliderValue(0);
-      }
-    }
-  };
-
-  // Update video time when slider value changes
-  const handleSliderChange = (event: any) => {
-    const videoElement = getVideoElement();
-    getVideoElement()!.pause();
-    setIsPlaying(false);
-    if (videoElement) {
-      console.log(videoElement.duration);
-      const newTime = (event.target.value / 100) * videoElement.duration;
-      videoElement.currentTime = newTime;
-    }
-  };
-
-  useEffect(() => {
-    // Add event listener to sync slider with video time
-    const videoElement = getVideoElement();
-    if (videoElement) {
-      videoElement.addEventListener("timeupdate", handleVideoTimeUpdate);
-    }
-
-    // Cleanup event listener on component unmount
-    return () => {
-      if (videoElement) {
-        videoElement.removeEventListener("timeupdate", handleVideoTimeUpdate);
-      }
-    };
-  }, []);
   return (
     <StyledWrapper>
-      <input
-        onChange={handleSliderChange}
-        type="range"
-        value={sliderValue}
-        min="0"
-        max="100"
-      />
       <button
         onClick={() => {
-          setIsPlaying((prev) => {
-            const newIsPlaying = !prev;
-            if (newIsPlaying) {
-              getVideoElement()!.play();
-            } else {
-              getVideoElement()!.pause();
-            }
-            return newIsPlaying;
-          });
+          setIsPlaying(!isPlaying);
         }}
       >
         {isPlaying ? "pause" : "play"}
