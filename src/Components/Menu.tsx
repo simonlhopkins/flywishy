@@ -11,13 +11,6 @@ function Menu({ callbacks }: Props) {
   const [menuShowing, setMenuShowing] = useState(false);
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value;
-    if (newValue == "flyWishy") {
-      callbacks.upateVideoSource("./video/flyVideo.mp4");
-    } else if (newValue == "lowTaperFade") {
-      callbacks.upateVideoSource("./video/ninja.mp4");
-    } else {
-      console.log("unrecognized source");
-    }
   };
   return (
     <StyledWrapper>
