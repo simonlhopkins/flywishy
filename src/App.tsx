@@ -178,6 +178,7 @@ const StyledWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   .ios-modal .buttonContainer {
     display: inline-flex;
     width: 100%;
