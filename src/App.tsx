@@ -101,11 +101,13 @@ function App() {
         preload="metadata"
         autoPlay={false}
         hidden
+        src="/video/flyVideo.mp4"
         controls
         playsInline
         loop={true}
         ref={videoRef}
       ></video>
+
       <div className={clsx("topBar", "ios-navigationBar")}>
         <button className={clsx("ios-button", "viewButton")}>
           <p className={clsx("ios-text")}>Menu</p>

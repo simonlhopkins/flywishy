@@ -8,7 +8,6 @@ import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import Hls from "hls.js";
-import { resolve } from "path";
 
 class MainScene {
   musicTextureManager: MusicTextureManager;
@@ -79,13 +78,11 @@ class MainScene {
     });
   }
 
-  private initializeHLSStream(element: HTMLMediaElement) {
+  private async initializeHLSStream(element: HTMLMediaElement) {
     const url = "https://d1d621jepmseha.cloudfront.net/wishyStream/video.m3u8";
     console.log("initialize stream");
     const initializeCurrentTime = () => {
-      console.log("current time::");
       const duration = element.duration; // Duration of the video
-      console.log(duration);
       const currentTime = Date.now() / 1000; // Current time in seconds (Unix timestamp)
       const timeToSet = currentTime % duration; // Modulo to get time within the duration
 
@@ -95,20 +92,24 @@ class MainScene {
       // element.play();
       initializeCurrentTime();
     });
-    if (Hls.isSupported()) {
-      var hls = new Hls();
-      hls.loadSource(url);
-      hls.attachMedia(element);
-      hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        // element.play();
-        console.log("parsed");
-      });
-    } else if (element.canPlayType("application/vnd.apple.mpegurl")) {
-      element.src = url;
-      element.addEventListener("loadedmetadata", function () {
-        // element.play();
-      });
-    }
+    return new Promise<void>((res, rej) => {
+      if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(element);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          // element.play();
+          console.log("parsed");
+          res();
+        });
+      } else if (element.canPlayType("application/vnd.apple.mpegurl")) {
+        element.src = url;
+        element.addEventListener("loadedmetadata", function () {
+          // element.play();
+          res();
+        });
+      }
+    });
   }
 
   private async initialize(
@@ -118,7 +119,7 @@ class MainScene {
     video: HTMLVideoElement,
     iframeParent: HTMLDivElement
   ) {
-    this.initializeHLSStream(video);
+    // await this.initializeHLSStream(video);
 
     const size = new THREE.Vector2();
     renderer.getSize(size);

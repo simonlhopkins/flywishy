@@ -20,13 +20,10 @@ class MusicTextureManager {
 
     const startTone = async () => {
       await Tone.start();
-      console.log("Tone.js started!");
       this.videoElement.muted = false;
       this.audioNode = Tone.getContext().createMediaElementSource(
         this.videoElement
       );
-
-      console.log(this.audioNode);
       Tone.connect(this.audioNode, this.fft);
       Tone.connect(this.fft, Tone.getDestination());
       this.fft.toDestination();
