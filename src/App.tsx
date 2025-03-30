@@ -5,6 +5,8 @@ import useStore from "./Store/store";
 import styled from "styled-components";
 import clsx from "clsx";
 
+const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
+
 export interface ButtonCallbacks {
   reset(): void;
   lookAtGlobe(): void;
@@ -20,7 +22,13 @@ function App() {
   const [disableInput, setDisableInput] = useState(false);
 
   const { setIsPlaying, isPlaying } = useStore();
-
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
   useEffect(() => {
     if (sceneRef.current == null) {
       setDisableInput(true);
@@ -57,7 +65,13 @@ function App() {
   };
 
   const onCheatSubmitted = (cheatText: string) => {
-    console.log(cheatText);
+    const parsedCode = cheatText.replaceAll(" ", "").toUpperCase();
+    console.log(parsedCode);
+    if (cheatCodes.includes(parsedCode)) {
+      console.log("success");
+    } else {
+      console.log("cheat code not found.");
+    }
   };
 
   return (
@@ -100,7 +114,7 @@ function App() {
       <video
         preload="metadata"
         autoPlay={false}
-        hidden
+        // hidden
         src="/video/flyVideo.mp4"
         controls
         playsInline
@@ -128,7 +142,12 @@ function App() {
         </div>
       </div>
       <div className={clsx("bottomBar", "ios-navigationBar")}>
-        <button className={clsx("ios-button")}>
+        <button
+          onClick={() => {
+            toggleFullScreen();
+          }}
+          className={clsx("ios-button")}
+        >
           <img src="/images/open-parachute.svg" />
         </button>
         <div className="ios-segmentedControl">

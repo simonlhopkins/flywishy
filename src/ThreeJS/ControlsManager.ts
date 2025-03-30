@@ -32,7 +32,7 @@ class ControlsManager implements IControlsManager {
 
     CameraControls.install({ THREE: THREE });
     this.controls = new CameraControls(camera, domElement);
-    this.controls.maxPolarAngle = Math.PI / 2;
+    // this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.minDistance = 0.3;
     this.controls.maxDistance = 10;
     this.controls.mouseButtons.right = CameraControls.ACTION.NONE;
@@ -92,6 +92,7 @@ class ControlsManager implements IControlsManager {
           })
           .easing(Easing.Sinusoidal.InOut)
           .onComplete(() => {
+            this.controls.maxPolarAngle = Math.PI / 2;
             res();
           })
       );
@@ -116,6 +117,8 @@ class ControlsManager implements IControlsManager {
           })
           .easing(Easing.Sinusoidal.InOut)
           .onComplete(() => {
+            this.controls.maxPolarAngle = Math.PI;
+
             res();
           })
       );

@@ -81,17 +81,7 @@ class MainScene {
   private async initializeHLSStream(element: HTMLMediaElement) {
     const url = "https://d1d621jepmseha.cloudfront.net/wishyStream/video.m3u8";
     console.log("initialize stream");
-    const initializeCurrentTime = () => {
-      const duration = element.duration; // Duration of the video
-      const currentTime = Date.now() / 1000; // Current time in seconds (Unix timestamp)
-      const timeToSet = currentTime % duration; // Modulo to get time within the duration
 
-      element.currentTime = timeToSet; // Set the current time of the stream
-    };
-    element.addEventListener("loadedmetadata", function () {
-      // element.play();
-      initializeCurrentTime();
-    });
     return new Promise<void>((res, rej) => {
       if (Hls.isSupported()) {
         var hls = new Hls();
@@ -120,7 +110,18 @@ class MainScene {
     iframeParent: HTMLDivElement
   ) {
     // await this.initializeHLSStream(video);
+    const initializeCurrentTime = () => {
+      const duration = video.duration; // Duration of the video
+      const currentTime = Date.now() / 1000; // Current time in seconds (Unix timestamp)
+      const timeToSet = currentTime % duration; // Modulo to get time within the duration
 
+      video.currentTime = timeToSet; // Set the current time of the stream
+    };
+    video.addEventListener("loadedmetadata", function () {
+      // element.play();
+      console.log("meta");
+      initializeCurrentTime();
+    });
     const size = new THREE.Vector2();
     renderer.getSize(size);
     this.iframePlayer = await this.initializeIframe(iframeParent);
