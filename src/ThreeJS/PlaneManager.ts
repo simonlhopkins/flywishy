@@ -3,17 +3,49 @@ import TweenManager from "./TweenManager";
 import Planet from "./Planet";
 import { Tween } from "@tweenjs/tween.js";
 import { Util } from "../Util";
+import MusicTextureManager from "./MusicTextureManager";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
 class PlaneManager {
   private planeMesh: THREE.Group;
   private tweenManager: TweenManager;
+  private planeMaterial: THREE.RawShaderMaterial | null = null;
   //hell yea bro we can make a state machine now...
 
   constructor(tweenManager: TweenManager, planeMesh: THREE.Group) {
     this.planeMesh = planeMesh;
     this.tweenManager = tweenManager;
+
+    this.CreatePlaneMaterial().then((mat) => {
+      this.planeMaterial = mat;
+
+      this.planeMesh.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.material = this.planeMaterial!;
+        }
+      });
+    });
+  }
+  async CreatePlaneMaterial() {
+    const texture = new THREE.TextureLoader().load(
+      "./images/wishyPlaneTexture.png"
+    );
+    const vertSource = await (await fetch("./shaders/planeVert.vs")).text();
+    const fragSource = await (await fetch("./shaders/planeFrag.fs")).text();
+
+    const material = new THREE.RawShaderMaterial({
+      uniforms: {
+        uTexture: { value: texture },
+        uEnergyHistory: { value: texture },
+        uWaveform: { value: texture },
+        uTime: { value: 0.0 },
+      },
+      vertexShader: vertSource,
+      fragmentShader: fragSource,
+    });
+    return material;
   }
   getPlanePos() {
     return this.planeMesh.position.clone();
@@ -165,6 +197,19 @@ class PlaneManager {
         .clone()
         .slerp(endDirectionQuat, smoothstepProgress);
       this.planeMesh.quaternion.copy(directionQuaternion);
+    }
+  }
+
+  public updateMaterial(
+    elapsedTime: number,
+    deltaTime: number,
+    musicTexture: THREE.DataTexture,
+    waveformTexture: THREE.DataTexture
+  ) {
+    if (this.planeMaterial) {
+      this.planeMaterial.uniforms.uTime.value = elapsedTime;
+      this.planeMaterial.uniforms.uEnergyHistory.value = musicTexture;
+      this.planeMaterial.uniforms.uWaveform.value = waveformTexture;
     }
   }
 }

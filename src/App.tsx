@@ -4,6 +4,7 @@ import MainScene from "./ThreeJS/MainScene";
 import useStore from "./Store/store";
 import styled from "styled-components";
 import clsx from "clsx";
+import Events from "./Events";
 
 const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
 
@@ -33,13 +34,19 @@ function App() {
     if (sceneRef.current == null) {
       setDisableInput(true);
       sceneRef.current = new MainScene(
-        // document.getElementById("out") as HTMLAudioElement,
-        videoRef.current!,
+        document.getElementById("wishyAudio") as HTMLAudioElement,
         iframeParentRef.current!,
+        {
+          OnCityUpdate: () => {},
+        },
         () => {
           setDisableInput(false);
         }
       );
+
+      Events.Get().addEventListener("cityChanged", (e) => {
+        console.log(e.detail.fromCity, e.detail.toCity);
+      });
     }
   }, []);
 
@@ -99,7 +106,7 @@ function App() {
         </div>
       </dialog>
 
-      <video
+      {/* <video
         preload="metadata"
         autoPlay={false}
         muted
@@ -111,7 +118,16 @@ function App() {
         playsInline
         loop={true}
         ref={videoRef}
-      ></video>
+      ></video> */}
+      <audio
+        id="wishyAudio"
+        hidden
+        controls
+        crossOrigin="anonymous"
+        preload="metadata"
+        loop
+        src="https://d1d621jepmseha.cloudfront.net/Wishy+-+Planet+Popstar+(Official+EP+Stream)+%5BuKu6TFNjkNc%5D.mp3"
+      ></audio>
       <div className={clsx("topBar", "ios-navigationBar")}>
         <button className={clsx("ios-button", "viewButton")}>
           <p className={clsx("ios-text")}>Menu</p>
@@ -185,7 +201,7 @@ function App() {
 
 const StyledWrapper = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 100svh;
   position: relative;
   display: flex;
   flex-direction: column;

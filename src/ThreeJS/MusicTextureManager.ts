@@ -5,6 +5,8 @@ import BinAnalyzer from "../MusicAnalyzers/BinAnalyzer";
 
 class MusicTextureManager {
   private fft: Tone.FFT = new Tone.FFT(1024);
+  private waveform: Tone.Waveform = new Tone.Waveform(256);
+
   private audioNode: MediaElementAudioSourceNode | null = null;
   private bassAnalyzer: BinAnalyzer = new BinAnalyzer();
   public lowMidAnalyzer: BinAnalyzer = new BinAnalyzer();
@@ -13,23 +15,22 @@ class MusicTextureManager {
   public trebleAnalyzer: BinAnalyzer = new BinAnalyzer();
 
   energyHistory: number[][] = [];
-  private texture = this.createEnergyHistoryTexture();
-  private videoElement: HTMLMediaElement;
-  constructor(videoElement: HTMLMediaElement) {
-    this.videoElement = videoElement;
+  private energyHistoryTexture = this.createEnergyHistoryTexture();
+  private waveformTexture = this.createWaveformTexture();
+  private mediaElement: HTMLMediaElement;
+  constructor(mediaElement: HTMLMediaElement) {
+    this.mediaElement = mediaElement;
 
     const startTone = async () => {
       await Tone.start();
-      console.log("tone started!!!!");
-      this.videoElement.muted = false;
+      this.mediaElement.muted = false;
       const audioNode = Tone.getContext().createMediaElementSource(
-        this.videoElement
+        this.mediaElement
       );
       Tone.connect(audioNode, this.fft);
-      Tone.connect(this.fft, Tone.getDestination());
+      Tone.connect(audioNode, this.waveform);
       this.fft.toDestination();
       // Remove the event listener after Tone.js starts
-      console.log(this.videoElement);
       window.removeEventListener("click", startTone);
     };
 
@@ -61,8 +62,11 @@ class MusicTextureManager {
     console.log(buffer);
   }
 
-  getTexture() {
-    return this.texture;
+  getEnergyHistoryTexture() {
+    return this.energyHistoryTexture;
+  }
+  getWaveformTexture() {
+    return this.waveformTexture;
   }
   getFFTValues() {
     return this.fft.getValue();
@@ -81,6 +85,19 @@ class MusicTextureManager {
       this.trebleAnalyzer,
     ];
   }
+
+  private updateWaveformTexture() {
+    const finalArr = new Uint8Array(256);
+    finalArr.set(
+      this.waveform
+        .getValue()
+        .map((value) => Util.mapRange(value, -1, 1, 0, 255)),
+      0
+    );
+
+    this.waveformTexture.image.data = finalArr;
+    this.waveformTexture.needsUpdate = true; // Mark texture for update
+  }
   private updateEnergyHistoryTexture() {
     // if (this.initialized == false) {
     //   console.error("trying to update energy history before initialized");
@@ -91,18 +108,20 @@ class MusicTextureManager {
     const energies = this.getAnalyzers().map((analyzer) =>
       analyzer.getCurrentNormalizedEnergy()
     );
+
     // Update energy history
     this.energyHistory.unshift(energies.map((i) => i * 255));
     if (this.energyHistory.length > 256) {
       this.energyHistory.pop();
     }
+
     // Flatten history and set into final array
     const flattened = this.energyHistory.flat();
     finalArr.set(flattened, 0);
 
     // Update the Three.js texture
-    this.texture.image.data = finalArr; // Update the data
-    this.texture.needsUpdate = true; // Mark texture for update
+    this.energyHistoryTexture.image.data = finalArr; // Update the data
+    this.energyHistoryTexture.needsUpdate = true; // Mark texture for update
   }
 
   public reset() {
@@ -131,21 +150,22 @@ class MusicTextureManager {
   }
   update(elapsedTime: number, _deltaTime: number) {
     // if (!this.initialized) return;
-    if (this.videoElement.paused) {
+    if (this.mediaElement.paused) {
       return;
     }
     this.updateBinData(elapsedTime);
     this.updateEnergyHistoryTexture();
+    this.updateWaveformTexture();
   }
 
   private createEnergyHistoryTexture() {
-    const numBins = 5;
+    const width = 5;
     const textureHeight = 256;
-    const initialData = new Uint8Array(numBins * textureHeight);
+    const initialData = new Uint8Array(width * textureHeight);
 
     const energyHistoryTexture = new THREE.DataTexture(
       initialData, // Raw data array
-      numBins, // Width of the texture
+      width, // Width of the texture
       textureHeight, // Height of the texture
       THREE.RedFormat
       // THREE.IntType
@@ -157,6 +177,26 @@ class MusicTextureManager {
     energyHistoryTexture.wrapS = THREE.ClampToEdgeWrapping;
     energyHistoryTexture.wrapT = THREE.ClampToEdgeWrapping;
     return energyHistoryTexture;
+  }
+  private createWaveformTexture() {
+    const width = 256;
+    const textureHeight = 1;
+    const initialData = new Uint8Array(width * textureHeight);
+
+    const waveformTexture = new THREE.DataTexture(
+      initialData, // Raw data array
+      width, // Width of the texture
+      textureHeight, // Height of the texture
+      THREE.RedFormat
+      // THREE.IntType
+    );
+
+    // Set texture properties
+    waveformTexture.minFilter = THREE.NearestFilter;
+    waveformTexture.magFilter = THREE.NearestFilter;
+    waveformTexture.wrapS = THREE.ClampToEdgeWrapping;
+    waveformTexture.wrapT = THREE.ClampToEdgeWrapping;
+    return waveformTexture;
   }
 }
 

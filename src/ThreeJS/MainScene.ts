@@ -8,27 +8,33 @@ import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import Hls, { BufferCreatedTrack } from "hls.js";
-
+interface EventListeners {
+  OnCityUpdate(): void;
+}
 class MainScene {
   musicTextureManager: MusicTextureManager;
   controlsManager: IControlsManager | null = null;
   stats = new Stats();
-  private video: HTMLMediaElement;
+  private mediaElement: HTMLMediaElement;
   private iframePlayer: YT.Player | null = null;
   private tweenManager = new TweenManager();
+
   constructor(
-    video: HTMLMediaElement,
+    mediaElement: HTMLMediaElement,
     iframeParent: HTMLDivElement,
+    listeners: EventListeners,
     onReady?: () => void
   ) {
-    this.musicTextureManager = new MusicTextureManager(video);
-    this.video = video;
+    this.musicTextureManager = new MusicTextureManager(mediaElement);
+    this.mediaElement = mediaElement;
     const parentDiv = document.getElementById("flyWishy")!;
     const scene = new THREE.Scene();
     // const planeScene = new THREE.Scene();
-    const light = new THREE.AmbientLight(0xffffff); // soft white light
-    scene.add(light);
+    // const light = new THREE.AmbientLight(0xffffff); // soft white light
+    // scene.add(light);
     // planeScene.add(light);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increase intensity
+    scene.add(ambientLight);
     const camera = new THREE.PerspectiveCamera(
       75,
       parentDiv.clientWidth / parentDiv.clientHeight,
@@ -42,6 +48,12 @@ class MainScene {
     parentDiv.appendChild(renderer.domElement);
     parentDiv.appendChild(this.stats.dom);
 
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "s" || event.key === "S") {
+        this.toggleStats();
+      }
+    });
+    this.toggleStats();
     window.addEventListener("resize", () => {
       const parentDiv = document.getElementById("flyWishy")!;
       // Update camera aspect ratio
@@ -54,9 +66,14 @@ class MainScene {
       renderer.setPixelRatio(window.devicePixelRatio); // Maintain sharpness on high-DPI screens
     });
     //async init function then we can update the scene after everything is loaded
-    this.initialize(scene, camera, renderer, video, iframeParent).then(onReady);
+    this.initialize(scene, camera, renderer, mediaElement, iframeParent).then(
+      onReady
+    );
   }
-
+  private toggleStats() {
+    this.stats.dom.style.display =
+      this.stats.dom.style.display == "none" ? "block" : "none";
+  }
   private initializeIframe(element: HTMLDivElement): Promise<YT.Player> {
     return new Promise<YT.Player>((res, rej) => {
       const player = new YT.Player(element, {
@@ -119,18 +136,18 @@ class MainScene {
     scene: THREE.Scene,
     camera: THREE.PerspectiveCamera,
     renderer: THREE.WebGLRenderer,
-    video: HTMLMediaElement,
+    mediaElement: HTMLMediaElement,
     iframeParent: HTMLDivElement
   ) {
     // await this.initializeHLSStream(video);
     const initializeCurrentTime = () => {
-      const duration = video.duration; // Duration of the video
+      const duration = mediaElement.duration; // Duration of the video
       const currentTime = Date.now() / 1000; // Current time in seconds (Unix timestamp)
       const timeToSet = currentTime % duration; // Modulo to get time within the duration
 
-      video.currentTime = timeToSet; // Set the current time of the stream
+      mediaElement.currentTime = timeToSet; // Set the current time of the stream
     };
-    video.addEventListener("loadedmetadata", function () {
+    mediaElement.addEventListener("loadedmetadata", function () {
       // element.play();
       console.log("meta");
       initializeCurrentTime();
@@ -188,14 +205,14 @@ class MainScene {
       this.iframePlayer.playVideo();
     }
     this.tweenManager.resume();
-    this.video.play();
+    this.mediaElement.play();
   }
   public pause() {
     if (this.iframePlayer) {
       this.iframePlayer.pauseVideo();
     }
     this.tweenManager.pause();
-    this.video.pause();
+    this.mediaElement.pause();
   }
   async lookAtPlane() {
     if (this.controlsManager) {
@@ -240,7 +257,7 @@ class MainScene {
       const loader = new GLTFLoader();
 
       loader.setPath("./models/plane/").load(
-        "airport_airplane_2.glb",
+        "wishy_plane.glb",
         (gltf) => {
           const plane = gltf.scene;
           const planeScale = 0.01;

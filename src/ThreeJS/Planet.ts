@@ -8,6 +8,8 @@ import { Util } from "../Util";
 import ThreeJSUtils from "./ThreeJSUtils";
 import Atmosphere from "./Atmosphere";
 import PlaneManager from "./PlaneManager";
+import MainScene from "./MainScene";
+import Events from "../Events";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -130,8 +132,18 @@ class Planet {
   createPlaneTween(cities: CityData[]) {
     const firstTime = this.startCity == this.endCity;
     this.startCity = this.endCity;
+
     this.endCity = this.chooseRandom(
       cities.filter((city) => city.city != this.startCity.city)
+    );
+    Events.Get().dispatchTypedEvent(
+      "cityChanged",
+      new CustomEvent("cityChanged", {
+        detail: {
+          fromCity: this.startCity,
+          toCity: this.endCity,
+        },
+      })
     );
     const startPos = Planet.getPosOnPlanetFromCity(
       this.startCity,
@@ -197,12 +209,18 @@ class Planet {
       this.getPlanePos().normalize()
     );
     this.planetMaterial.uniforms.uEnergyHistory.value =
-      this.musicTextureManager.getTexture();
+      this.musicTextureManager.getEnergyHistoryTexture();
 
     this.atmosphere.update(
       elapsedTime,
       deltaTime,
       this.musicTextureManager.getBinValues()
+    );
+    this.planeManager.updateMaterial(
+      elapsedTime,
+      deltaTime,
+      this.musicTextureManager.getEnergyHistoryTexture(),
+      this.musicTextureManager.getWaveformTexture()
     );
     //cities
     // this.cityLabels.forEach((billboardCity) => {
