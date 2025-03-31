@@ -20,15 +20,16 @@ class MusicTextureManager {
 
     const startTone = async () => {
       await Tone.start();
+      console.log("tone started!!!!");
       this.videoElement.muted = false;
-      this.audioNode = Tone.getContext().createMediaElementSource(
+      const audioNode = Tone.getContext().createMediaElementSource(
         this.videoElement
       );
-      Tone.connect(this.audioNode, this.fft);
+      Tone.connect(audioNode, this.fft);
       Tone.connect(this.fft, Tone.getDestination());
       this.fft.toDestination();
-
       // Remove the event listener after Tone.js starts
+      console.log(this.videoElement);
       window.removeEventListener("click", startTone);
     };
 
@@ -55,6 +56,11 @@ class MusicTextureManager {
       Util.getEnergyBins(128, fft, sampleRate, low, high)
     );
   }
+
+  public onBufferCreated(buffer: BufferSource) {
+    console.log(buffer);
+  }
+
   getTexture() {
     return this.texture;
   }

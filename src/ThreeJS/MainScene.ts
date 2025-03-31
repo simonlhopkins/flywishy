@@ -7,17 +7,17 @@ import ControlsManager, { IControlsManager } from "./ControlsManager";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
-import Hls from "hls.js";
+import Hls, { BufferCreatedTrack } from "hls.js";
 
 class MainScene {
   musicTextureManager: MusicTextureManager;
   controlsManager: IControlsManager | null = null;
   stats = new Stats();
-  private video: HTMLVideoElement;
+  private video: HTMLMediaElement;
   private iframePlayer: YT.Player | null = null;
   private tweenManager = new TweenManager();
   constructor(
-    video: HTMLVideoElement,
+    video: HTMLMediaElement,
     iframeParent: HTMLDivElement,
     onReady?: () => void
   ) {
@@ -84,18 +84,31 @@ class MainScene {
 
     return new Promise<void>((res, rej) => {
       if (Hls.isSupported()) {
-        var hls = new Hls();
+        var hls = new Hls({});
         hls.loadSource(url);
         hls.attachMedia(element);
         hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          // element.play();
           console.log("parsed");
           res();
+        });
+        hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+          console.log("media attatched");
+        });
+        hls.on(Hls.Events.BUFFER_CREATED, (event, data) => {
+          console.log("BUFFER_CREATED");
+
+          console.log(data.tracks.audio!.buffer);
+          // this.musicTextureManager.onBufferCreated(data.tracks.audio!.buffer);
+        });
+        hls.on(Hls.Events.BUFFER_APPENDED, function (event, data) {
+          if (data.type === "audio") {
+            // The 'audio' type data contains the raw audio segment data
+            console.log("Audio data appended:", data);
+          }
         });
       } else if (element.canPlayType("application/vnd.apple.mpegurl")) {
         element.src = url;
         element.addEventListener("loadedmetadata", function () {
-          // element.play();
           res();
         });
       }
@@ -106,7 +119,7 @@ class MainScene {
     scene: THREE.Scene,
     camera: THREE.PerspectiveCamera,
     renderer: THREE.WebGLRenderer,
-    video: HTMLVideoElement,
+    video: HTMLMediaElement,
     iframeParent: HTMLDivElement
   ) {
     // await this.initializeHLSStream(video);

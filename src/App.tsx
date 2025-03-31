@@ -33,6 +33,7 @@ function App() {
     if (sceneRef.current == null) {
       setDisableInput(true);
       sceneRef.current = new MainScene(
+        // document.getElementById("out") as HTMLAudioElement,
         videoRef.current!,
         iframeParentRef.current!,
         () => {
@@ -49,20 +50,6 @@ function App() {
       sceneRef.current!.pause();
     }
   }, [isPlaying]);
-
-  const callbacks: ButtonCallbacks = {
-    reset() {
-      sceneRef.current!.reset();
-      videoRef.current!.currentTime = 0;
-      videoRef.current!.play();
-    },
-    lookAtGlobe() {
-      sceneRef.current!.lookAtGlobe();
-    },
-    lookAtPlane() {
-      sceneRef.current!.lookAtPlane();
-    },
-  };
 
   const onCheatSubmitted = (cheatText: string) => {
     const parsedCode = cheatText.replaceAll(" ", "").toUpperCase();
@@ -111,17 +98,20 @@ function App() {
           </button>
         </div>
       </dialog>
+
       <video
         preload="metadata"
         autoPlay={false}
-        // hidden
-        src="/video/flyVideo.mp4"
+        muted
+        hidden
+        src="/video/flyVideoSmall.mp4"
+        crossOrigin="anonymous"
+        disableRemotePlayback
         controls
         playsInline
         loop={true}
         ref={videoRef}
       ></video>
-
       <div className={clsx("topBar", "ios-navigationBar")}>
         <button className={clsx("ios-button", "viewButton")}>
           <p className={clsx("ios-text")}>Menu</p>
