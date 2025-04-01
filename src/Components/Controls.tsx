@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ButtonCallbacks } from "../App";
 import { ReactNode, useState } from "react";
-import useStore from "../Store/store";
+import useStore from "../Store/UserStore";
 
 interface Props {
   callbacks: ButtonCallbacks;

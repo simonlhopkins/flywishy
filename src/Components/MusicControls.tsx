@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ButtonCallbacks } from "../App";
 import styled from "styled-components";
-import useStore from "../Store/store";
+import useStore from "../Store/UserStore";
 
 interface Props {}
 function MusicControls() {

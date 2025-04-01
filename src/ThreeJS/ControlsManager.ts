@@ -76,7 +76,7 @@ class ControlsManager implements IControlsManager {
 
   public lookAtPlane() {
     const beginningDistance = this.controls.distance;
-    const targetZoom = 1.2;
+    const targetZoom = 1;
     return new Promise<void>((res) => {
       this.tweenManager.add(
         new Tween(this.lookAtPlanePercent)
@@ -92,6 +92,8 @@ class ControlsManager implements IControlsManager {
           })
           .easing(Easing.Sinusoidal.InOut)
           .onComplete(() => {
+            this.controls.minDistance = 0.55;
+            this.controls.maxDistance = 10;
             this.controls.maxPolarAngle = Math.PI / 2;
             res();
           })
@@ -117,8 +119,9 @@ class ControlsManager implements IControlsManager {
           })
           .easing(Easing.Sinusoidal.InOut)
           .onComplete(() => {
+            this.controls.minDistance = 5;
+            this.controls.maxDistance = 15;
             this.controls.maxPolarAngle = Math.PI;
-
             res();
           })
       );

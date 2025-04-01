@@ -5,7 +5,7 @@ import BinAnalyzer from "../MusicAnalyzers/BinAnalyzer";
 
 class MusicTextureManager {
   private fft: Tone.FFT = new Tone.FFT(1024);
-  private waveform: Tone.Waveform = new Tone.Waveform(256);
+  private waveform: Tone.Analyser = new Tone.Analyser("waveform", 512);
 
   private audioNode: MediaElementAudioSourceNode | null = null;
   private bassAnalyzer: BinAnalyzer = new BinAnalyzer();
@@ -20,15 +20,15 @@ class MusicTextureManager {
   private mediaElement: HTMLMediaElement;
   constructor(mediaElement: HTMLMediaElement) {
     this.mediaElement = mediaElement;
-
+    this.waveform.smoothing = 1;
     const startTone = async () => {
       await Tone.start();
       this.mediaElement.muted = false;
-      const audioNode = Tone.getContext().createMediaElementSource(
+      this.audioNode = Tone.getContext().createMediaElementSource(
         this.mediaElement
       );
-      Tone.connect(audioNode, this.fft);
-      Tone.connect(audioNode, this.waveform);
+      Tone.connect(this.audioNode, this.fft);
+      Tone.connect(this.audioNode, this.waveform);
       this.fft.toDestination();
       // Remove the event listener after Tone.js starts
       window.removeEventListener("click", startTone);
@@ -50,6 +50,17 @@ class MusicTextureManager {
     const averageDb = 20 * Math.log10(averageLinear);
 
     return averageDb;
+  }
+  pause() {
+    if (this.audioNode) {
+      this.audioNode.disconnect();
+    }
+  }
+  play() {
+    if (this.audioNode) {
+      Tone.connect(this.audioNode, this.fft);
+      Tone.connect(this.audioNode, this.waveform);
+    }
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {
     const sampleRate = Tone.getContext().sampleRate;
@@ -87,11 +98,11 @@ class MusicTextureManager {
   }
 
   private updateWaveformTexture() {
-    const finalArr = new Uint8Array(256);
+    const finalArr = new Uint8Array(this.waveform.size);
     finalArr.set(
       this.waveform
         .getValue()
-        .map((value) => Util.mapRange(value, -1, 1, 0, 255)),
+        .map((value) => Util.mapRange(value as number, -1, 1, 0, 255)),
       0
     );
 
@@ -179,7 +190,8 @@ class MusicTextureManager {
     return energyHistoryTexture;
   }
   private createWaveformTexture() {
-    const width = 256;
+    const width = this.waveform.size;
+    console.log(this.waveform.size);
     const textureHeight = 1;
     const initialData = new Uint8Array(width * textureHeight);
 

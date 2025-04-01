@@ -23,11 +23,12 @@ void main() {
     float waveformValue = texture2D(uWaveform, vec2(vUv.x, vUv.y)).r;
     
     float sidePlaneUVY = mapRange(vUv.y, 0., 0.15, 0., 1.);
+
     sidePlaneUVY = max(0., sidePlaneUVY);
     float waveformHeight = abs(waveformValue-0.5);
-    
-    float lowBound = smoothstep(0., 0.05, sidePlaneUVY - 0.5 - waveformHeight);
-    float upperBound = 1. - smoothstep(0., 0.05, sidePlaneUVY - 0.5 + waveformHeight);
+    float edgeSoftness = 0.01;
+    float lowBound = smoothstep(0., edgeSoftness, sidePlaneUVY - 0.5 - waveformHeight);
+    float upperBound = 1. - smoothstep(0., edgeSoftness, sidePlaneUVY - 0.5 + waveformHeight);
     float colorValue = sidePlaneUVY<0.5? upperBound: lowBound; 
-    gl_FragColor = vec4(mix(color.rgb, 1.-color.rgb, 1.-colorValue), 1.0);
+    gl_FragColor = vec4(mix(color.rgb, vec3(0, 0.8, 0.65), 1.-colorValue), 1.0);
 }

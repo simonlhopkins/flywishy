@@ -150,6 +150,7 @@ class MainScene {
     mediaElement.addEventListener("loadedmetadata", function () {
       // element.play();
       console.log("meta");
+
       initializeCurrentTime();
     });
     const size = new THREE.Vector2();
@@ -206,6 +207,7 @@ class MainScene {
     }
     this.tweenManager.resume();
     this.mediaElement.play();
+    this.musicTextureManager.play();
   }
   public pause() {
     if (this.iframePlayer) {
@@ -213,6 +215,7 @@ class MainScene {
     }
     this.tweenManager.pause();
     this.mediaElement.pause();
+    this.musicTextureManager.pause();
   }
   async lookAtPlane() {
     if (this.controlsManager) {
