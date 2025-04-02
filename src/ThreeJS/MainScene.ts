@@ -202,12 +202,14 @@ class MainScene {
     renderer.setAnimationLoop(animate);
   }
   public play() {
-    if (this.iframePlayer) {
-      this.iframePlayer.playVideo();
-    }
-    this.tweenManager.resume();
-    this.mediaElement.play();
-    this.musicTextureManager.play();
+    this.musicTextureManager.initialize().then(() => {
+      if (this.iframePlayer) {
+        this.iframePlayer.playVideo();
+      }
+      this.tweenManager.resume();
+      this.mediaElement.play();
+      this.musicTextureManager.play();
+    });
   }
   public pause() {
     if (this.iframePlayer) {
@@ -238,6 +240,7 @@ class MainScene {
     const noiseTexture = new THREE.TextureLoader().load(
       "./images/noiseTexture.png"
     );
+    const whiteSquare = new THREE.TextureLoader().load("./images/whiteSquare");
     const vertSource = await (await fetch("./shaders/planetVert.vs")).text();
     const fragSource = await (await fetch("./shaders/planetFrag.fs")).text();
 
@@ -246,7 +249,8 @@ class MainScene {
         uTexture: { value: texture },
         uDisplacementMap: { value: noiseTexture },
         uDotPosition: { value: new THREE.Vector3(0, 0, 0) },
-        uEnergyHistory: { value: texture },
+        uEnergyHistory: { value: whiteSquare },
+        uWaveform: { value: whiteSquare },
         uTime: { value: 0.0 },
       },
       vertexShader: vertSource,

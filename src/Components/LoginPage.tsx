@@ -13,7 +13,6 @@ function LoginPage() {
     // Add form parameters to the URL
     if (!validateEmail(email)) {
       setError("invalid email!!!!");
-      setEmail("");
       return;
     }
     setError(null);
@@ -54,7 +53,7 @@ function LoginPage() {
           id="email"
           type="text"
         />
-        <label htmlFor="email"></label>
+        <button type="submit">submit</button>
       </form>
     </StyledWrapper>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MainScene from "../ThreeJS/MainScene";
 import styled from "styled-components";
 import clsx from "clsx";
@@ -77,7 +77,6 @@ function Visualizer() {
       console.log("cheat code not found.");
     }
   };
-
   return (
     <StyledWrapper>
       <CheatDialog ref={cheatDialogRef} onCheatSubmitted={onCheatSubmitted} />
@@ -186,11 +185,7 @@ const StyledWrapper = styled.div`
       flex: 1;
     }
   }
-  button p {
-    margin: 0px;
-    font-weight: bold;
-    font-size: 1.5rem;
-  }
+
   button img {
     color: white;
     filter: invert(100%) sepia(0%) saturate(12%) hue-rotate(226deg)

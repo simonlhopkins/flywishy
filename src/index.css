@@ -24,7 +24,7 @@
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100svh;
 }
 
 /* iOS 6 styling things */
@@ -66,6 +66,12 @@ body {
   filter: brightness(0.7);
 }
 
+.ios-button p {
+  margin: 0px;
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+
 .ios-text {
   color: white;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
@@ -103,6 +109,11 @@ body {
   box-shadow: 0 0 0.5px 1px rgba(0, 0, 0, 0.4), 0 4px 5px 0px rgba(0, 0, 0, 0.5);
   width: 300px;
   text-align: center;
+  font-weight: normal;
+  font-size: 1.3rem;
+}
+input {
+  font-size: 16px;
 }
 .ios-modal input {
   background: white;
@@ -128,11 +139,7 @@ body {
   font-size: 2rem;
   margin: 0px;
 }
-.ios-modal p {
-  font-weight: normal;
-  font-size: 1.3rem;
-  margin: 0px;
-}
+
 .ios-modal button {
   pointer-events: all;
 

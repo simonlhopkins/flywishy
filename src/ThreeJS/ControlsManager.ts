@@ -10,6 +10,9 @@ export interface IControlsManager {
   lookAtGlobe(): Promise<void>;
 }
 
+const PLANE_DEFAULT_POLAR_ANGLE = 0.8022233669230078;
+const PLANE_DEFAULT_AZIMUTH_ANGLE = 0.7739323347923857;
+
 class ControlsManager implements IControlsManager {
   private planet: Planet;
   private controls: CameraControls;
@@ -38,7 +41,10 @@ class ControlsManager implements IControlsManager {
     this.controls.mouseButtons.right = CameraControls.ACTION.NONE;
     this.controls.touches.two = CameraControls.ACTION.TOUCH_DOLLY;
     this.controls.touches.three = CameraControls.ACTION.NONE;
-    this.controls.rotateTo(0.5022233669230078, 0.7739323347923857);
+    this.controls.rotateTo(
+      PLANE_DEFAULT_POLAR_ANGLE,
+      PLANE_DEFAULT_AZIMUTH_ANGLE
+    );
     this.initControlsEventListeners();
     this.lookAtPlane();
   }
@@ -65,18 +71,55 @@ class ControlsManager implements IControlsManager {
       }
     });
 
-    //
+    this.initConfettiDragEvent();
     this.controls.addEventListener("transitionstart", () => {
       if (userDragging) return;
-
       this.disableAutoRotate = true;
       this.controls.addEventListener("rest", onRest);
     });
   }
 
+  private initConfettiDragEvent() {
+    let lastTime: null | number = null;
+    let lastPolarAngle: null | number = null;
+    let lastAzimuthAngle: null | number = null;
+    //this should be different on mobile than on laptop
+    const confettiThreshold = Util.isMobile() ? 15 : 50;
+    this.controls.addEventListener("control", (e) => {
+      const currentTime = performance.now();
+      if (
+        lastPolarAngle !== null &&
+        lastAzimuthAngle !== null &&
+        lastTime !== null
+      ) {
+        // Time difference in seconds
+        const deltaTime = (currentTime - lastTime) / 1000;
+        if (Util.isMobile()) {
+          console.log("mobile");
+        }
+        if (deltaTime > 0) {
+          // Calculate angular velocity
+          const polarVelocity =
+            Math.abs(this.controls.polarAngle - lastPolarAngle) / deltaTime;
+          const azimuthVelocity =
+            Math.abs(this.controls.azimuthAngle - lastAzimuthAngle) / deltaTime;
+          // Check if the user flicked (fast movement)
+          if (Math.max(polarVelocity, azimuthVelocity) > confettiThreshold) {
+            console.log("Spawn Confetti!!!");
+          }
+        }
+      }
+      // Store values for next frame
+      lastPolarAngle = this.controls.polarAngle;
+      lastAzimuthAngle = this.controls.azimuthAngle;
+      lastTime = currentTime;
+    });
+  }
   public lookAtPlane() {
     const beginningDistance = this.controls.distance;
     const targetZoom = 1;
+    const beginningPolarAngle = this.controls.polarAngle;
+    const beginningAzimuthAngle = this.controls.azimuthAngle;
     return new Promise<void>((res) => {
       this.tweenManager.add(
         new Tween(this.lookAtPlanePercent)
@@ -89,6 +132,20 @@ class ControlsManager implements IControlsManager {
               beginningDistance,
               targetZoom
             );
+            this.controls.polarAngle = Util.mapRange(
+              this.lookAtPlanePercent.value,
+              0,
+              1,
+              beginningPolarAngle,
+              PLANE_DEFAULT_POLAR_ANGLE
+            );
+            // this.controls.azimuthAngle = Util.mapRange(
+            //   this.lookAtPlanePercent.value,
+            //   0,
+            //   1,
+            //   beginningAzimuthAngle,
+            //   PLANE_DEFAULT_AZIMUTH_ANGLE
+            // );
           })
           .easing(Easing.Sinusoidal.InOut)
           .onComplete(() => {
@@ -104,6 +161,7 @@ class ControlsManager implements IControlsManager {
     //todo, maybe save the plane pos and quat at this point, so it is more smooth
     this.globeQuat = this.planet.getPlaneQuaternion();
     const beginningDistance = this.controls.distance;
+    const beginningPolarAngle = this.controls.polarAngle;
     return new Promise<void>((res) => {
       this.tweenManager.add(
         new Tween(this.lookAtPlanePercent)
@@ -115,6 +173,13 @@ class ControlsManager implements IControlsManager {
               1,
               beginningDistance,
               10
+            );
+            this.controls.polarAngle = Util.mapRange(
+              1 - this.lookAtPlanePercent.value,
+              0,
+              1,
+              beginningPolarAngle,
+              Math.PI / 2
             );
           })
           .easing(Easing.Sinusoidal.InOut)
@@ -158,7 +223,6 @@ class ControlsManager implements IControlsManager {
       planePosition,
       this.lookAtPlanePercent.value
     );
-
     this.controls.update(deltaTime);
     if (!this.disableAutoRotate) {
       // this.controls.azimuthAngle += 20 * deltaTime * THREE.MathUtils.DEG2RAD;

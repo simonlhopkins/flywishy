@@ -19,7 +19,6 @@ class Planet {
   planetMesh: THREE.Mesh;
   startCity: CityData;
   endCity: CityData;
-  debugPoint: THREE.Mesh;
   private tweenManager: TweenManager;
   cityLabels: BillboardText[] = [];
   private raycaster = new THREE.Raycaster();
@@ -52,10 +51,6 @@ class Planet {
     this.planetMesh.position.set(0, 0, 0);
 
     this.scene.add(this.planetMesh);
-
-    //testing out slerp
-    this.debugPoint = ThreeJSUtils.CreateSphere();
-    this.scene.add(this.debugPoint);
 
     // cities.forEach((item) => {
     //   const label = `📍${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
@@ -210,6 +205,8 @@ class Planet {
     );
     this.planetMaterial.uniforms.uEnergyHistory.value =
       this.musicTextureManager.getEnergyHistoryTexture();
+    this.planetMaterial.uniforms.uWaveform.value =
+      this.musicTextureManager.getWaveformTexture();
 
     this.atmosphere.update(
       elapsedTime,

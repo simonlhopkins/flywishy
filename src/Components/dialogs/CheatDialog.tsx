@@ -31,7 +31,7 @@ function CheatDialog({ ref, onCheatSubmitted }: Props) {
           placeholder="Enter a cheat code..."
           type="text"
         />
-        <div style={{ marginTop: "10px" }} className="buttonContainer">
+        <div style={{ marginTop: "1.4rem" }} className="buttonContainer">
           <button
             onClick={() => {
               ref.current!.close();

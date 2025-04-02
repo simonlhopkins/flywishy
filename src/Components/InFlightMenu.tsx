@@ -6,13 +6,10 @@ interface Props {
   onClose(): void;
 }
 function InFlightMenu({ showing, onClose }: Props) {
-  console.log(showing);
-
   return (
     <StyledWrapper className={clsx(showing && "showing")}>
       <h1>In Flight Menu</h1>
       <button onClick={onClose}>close</button>
-      <p>cheats found 2/40</p>
     </StyledWrapper>
   );
 }
@@ -29,7 +26,7 @@ const StyledWrapper = styled.div`
   background-color: red;
   z-index: 100;
   transform: translateY(100%) translateX(100%);
-  transition: transform 200ms;
+  transition: transform 500ms;
   box-shadow: -10px 10px 10px rgba(0, 0, 0, 0.5);
 
   &.showing {
