@@ -16,14 +16,15 @@ class PlaneManager {
   constructor(tweenManager: TweenManager, planeMesh: THREE.Group) {
     this.planeMesh = planeMesh;
     this.tweenManager = tweenManager;
-
     this.CreatePlaneMaterial().then((mat) => {
       this.planeMaterial = mat;
 
       this.planeMesh.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
-          mesh.material = this.planeMaterial!;
+          // mesh.material = this.planeMaterial!;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
         }
       });
     });
@@ -100,7 +101,7 @@ class PlaneManager {
     let angle = Math.acos(dot);
 
     const normalizedArcLength = Util.mapRange(angle, 0, Math.PI, 0, 1);
-    const time = Util.mapRange(normalizedArcLength, 0, 1, 2000, 5000);
+    const time = Util.mapRange(normalizedArcLength, 0, 1, 2000, 8000);
 
     const progress = { value: 0 };
 

@@ -5,13 +5,24 @@ interface User {
   email: string;
 }
 
+export interface VisualizerOptions {
+  waveformEnabled: boolean;
+  flower: boolean;
+  airplaneMode: boolean;
+  wishyMode: boolean;
+}
+
 // Zustand store type
 interface UserStore {
   user: User | null;
   hasSeenIntro: boolean;
+  visualizerOptions: VisualizerOptions;
+  isPlaying: boolean;
   setUser: (email: string) => void;
   clearUser: () => void;
   setHasSeenIntro: (seen: boolean) => void;
+  setVisualizerOptions: (options: VisualizerOptions) => void;
+  setIsPlaying: (isPlaying: boolean) => void;
 }
 
 // LocalStorage persistence handler
@@ -26,6 +37,13 @@ const useUserStore = create<UserStore>((set) => {
   return {
     user: loadOrDefault<User | null>("user", null),
     hasSeenIntro: loadOrDefault<boolean>("hasSeenIntro", false),
+    visualizerOptions: {
+      waveformEnabled: false,
+      flower: false,
+      airplaneMode: true,
+      wishyMode: false,
+    },
+    isPlaying: false,
     // Set user and persist to localStorage
     setUser: (email) => {
       const newUser = { email };
@@ -40,6 +58,12 @@ const useUserStore = create<UserStore>((set) => {
     setHasSeenIntro: (seen) => {
       localStorage.setItem("hasSeenIntro", String(seen));
       set({ hasSeenIntro: seen });
+    },
+    setVisualizerOptions: (options) => {
+      set({ visualizerOptions: options });
+    },
+    setIsPlaying: (isPlaying) => {
+      set({ isPlaying: isPlaying });
     },
   };
 });

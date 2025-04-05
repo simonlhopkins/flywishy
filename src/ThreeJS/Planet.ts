@@ -13,6 +13,23 @@ import Events from "../Events";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
+class ShaderOptions {
+  waveformEnabled: boolean = false;
+  flower: boolean = false;
+  wishyMode: boolean = false;
+
+  encode(): number {
+    let packed = 0;
+    const toggles = [this.waveformEnabled, this.flower, this.wishyMode];
+    for (let i = 0; i < toggles.length; i++) {
+      if (toggles[i]) {
+        packed += Math.pow(2, i); // Instead of bitwise shift, use power of 2
+      }
+    }
+    return packed;
+  }
+}
+
 class Planet {
   private scene: THREE.Scene;
   private camera: THREE.Camera;
@@ -28,6 +45,7 @@ class Planet {
   private atmosphere: Atmosphere;
   private radius = 4;
   private planeManager: PlaneManager;
+  private shaderOptions: ShaderOptions = new ShaderOptions();
   constructor(
     scene: THREE.Scene,
     camera: THREE.Camera,
@@ -86,6 +104,21 @@ class Planet {
 
     this.createPlaneTween(cities);
     this.tweenManager.pause();
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "w" || event.key === "W") {
+        this.shaderOptions.waveformEnabled =
+          !this.shaderOptions.waveformEnabled;
+      }
+    });
+  }
+  public updateShaderOptions(
+    waveformEnabled: boolean,
+    useFlower: boolean,
+    useWishyMode: boolean
+  ) {
+    this.shaderOptions.waveformEnabled = waveformEnabled;
+    this.shaderOptions.flower = useFlower;
+    this.shaderOptions.wishyMode = useWishyMode;
   }
   public updateZoomScale(zoom: number) {
     const textScale = Util.mapRange(
@@ -200,6 +233,7 @@ class Planet {
   update(elapsedTime: number, deltaTime: number) {
     //uniforms
     this.planetMaterial.uniforms.uTime.value = elapsedTime;
+    this.planetMaterial.uniforms.uOptions.value = this.shaderOptions.encode();
     this.planetMaterial.uniforms.uDotPosition.value.copy(
       this.getPlanePos().normalize()
     );

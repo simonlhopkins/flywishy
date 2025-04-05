@@ -7,7 +7,8 @@ import ControlsManager, { IControlsManager } from "./ControlsManager";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
-import Hls, { BufferCreatedTrack } from "hls.js";
+import Hls from "hls.js";
+import { VisualizerOptions } from "../Store/UserStore";
 interface EventListeners {
   OnCityUpdate(): void;
 }
@@ -18,7 +19,7 @@ class MainScene {
   private mediaElement: HTMLMediaElement;
   private iframePlayer: YT.Player | null = null;
   private tweenManager = new TweenManager();
-
+  private planet: Planet | null = null;
   constructor(
     mediaElement: HTMLMediaElement,
     iframeParent: HTMLDivElement,
@@ -33,8 +34,18 @@ class MainScene {
     // const light = new THREE.AmbientLight(0xffffff); // soft white light
     // scene.add(light);
     // planeScene.add(light);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Increase intensity
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1); // Increase intensity
     scene.add(ambientLight);
+    const light = new THREE.DirectionalLight(0xffffff, 1); // (color, intensity)
+
+    // Set light direction
+    light.position.set(5, 10, 5); // X, Y, Z position
+
+    // Optional: Enable shadows
+    light.castShadow = true;
+
+    // Add light to the scene
+    scene.add(light);
     const camera = new THREE.PerspectiveCamera(
       75,
       parentDiv.clientWidth / parentDiv.clientHeight,
@@ -160,7 +171,7 @@ class MainScene {
     const planeModel = await this.LoadPlaneModel();
     const planetMaterial = await this.CreatePlanetMaterial();
 
-    const planet = new Planet(
+    this.planet = new Planet(
       scene,
       camera,
       this.tweenManager,
@@ -170,7 +181,7 @@ class MainScene {
       cities
     );
     const controlsManager = new ControlsManager(
-      planet,
+      this.planet,
       camera,
       this.tweenManager,
       renderer.domElement
@@ -191,8 +202,8 @@ class MainScene {
       renderer.clearDepth();
       // renderer.render(planeScene, camera);
       this.musicTextureManager.update(elapsedTime, deltaTime);
-      planet.update(elapsedTime, deltaTime);
-      planet.updateZoomScale(controlsManager.GetZoomLevel());
+      this.planet!.update(elapsedTime, deltaTime);
+      this.planet!.updateZoomScale(controlsManager.GetZoomLevel());
 
       this.tweenManager.update();
       //this needs to happen last!!
@@ -201,6 +212,21 @@ class MainScene {
     };
     renderer.setAnimationLoop(animate);
   }
+
+  public updateVisualizerOptions(visualizerOptions: VisualizerOptions) {
+    if (this.planet) {
+      // if (visualizerOptions.waveformEnabled) {
+      //   this.controlsManager?.lookAtGlobe();
+      // }
+      console.log(visualizerOptions.flower);
+      this.planet.updateShaderOptions(
+        visualizerOptions.waveformEnabled,
+        visualizerOptions.flower,
+        visualizerOptions.wishyMode
+      );
+    }
+  }
+
   public play() {
     this.musicTextureManager.initialize().then(() => {
       if (this.iframePlayer) {
@@ -252,6 +278,7 @@ class MainScene {
         uEnergyHistory: { value: whiteSquare },
         uWaveform: { value: whiteSquare },
         uTime: { value: 0.0 },
+        uOptions: { value: 0.0 },
       },
       vertexShader: vertSource,
       fragmentShader: fragSource,

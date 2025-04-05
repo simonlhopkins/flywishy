@@ -172,7 +172,7 @@ class ControlsManager implements IControlsManager {
               0,
               1,
               beginningDistance,
-              10
+              Util.isMobile() ? 10 : 7
             );
             this.controls.polarAngle = Util.mapRange(
               1 - this.lookAtPlanePercent.value,

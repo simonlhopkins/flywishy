@@ -25,9 +25,14 @@ function Visualizer() {
   const [showMenu, setShowMenu] = useState(false);
 
   const [disableInput, setDisableInput] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const { hasSeenIntro } = useUserStore();
+  const {
+    hasSeenIntro,
+    visualizerOptions,
+    isPlaying,
+    setIsPlaying,
+    setVisualizerOptions,
+  } = useUserStore();
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -40,6 +45,17 @@ function Visualizer() {
       introDialogRef.current!.showModal();
     }
   }, [hasSeenIntro]);
+
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current!.updateVisualizerOptions(visualizerOptions);
+
+      if (!visualizerOptions.airplaneMode) {
+        cheatDialogRef.current!.showModal();
+      }
+    }
+  }, [visualizerOptions]);
+
   useEffect(() => {
     if (sceneRef.current == null) {
       setDisableInput(true);
@@ -53,7 +69,14 @@ function Visualizer() {
           setDisableInput(false);
         }
       );
-
+      document.addEventListener("visibilitychange", (event) => {
+        if (document.hidden) {
+          // do something if the page visibility changes to hidden
+          setIsPlaying(false);
+        } else {
+          // do something if the page visibility changes to visible
+        }
+      });
       Events.Get().addEventListener("cityChanged", (e) => {
         console.log(e.detail.fromCity, e.detail.toCity);
       });
@@ -71,11 +94,16 @@ function Visualizer() {
   const onCheatSubmitted = (cheatText: string) => {
     const parsedCode = cheatText.replaceAll(" ", "").toUpperCase();
     console.log(parsedCode);
+
     if (cheatCodes.includes(parsedCode)) {
       console.log("success");
     } else {
       console.log("cheat code not found.");
     }
+    setVisualizerOptions({
+      ...visualizerOptions,
+      airplaneMode: !visualizerOptions.airplaneMode,
+    });
   };
   return (
     <StyledWrapper>
@@ -88,6 +116,7 @@ function Visualizer() {
       />
       <InFlightMenu showing={showMenu} onClose={() => setShowMenu(false)} />
       <audio
+        style={{ width: "100%" }}
         id="wishyAudio"
         // hidden
         controls
@@ -96,15 +125,7 @@ function Visualizer() {
         loop
         src="https://d1d621jepmseha.cloudfront.net/Wishy+-+Planet+Popstar+(Official+EP+Stream)+%5BuKu6TFNjkNc%5D.mp3"
       ></audio>
-      <div className={clsx("topBar", "ios-navigationBar")}>
-        <button
-          onClick={() => {
-            setShowMenu((prev) => !prev);
-          }}
-          className={clsx("ios-button", "viewButton")}
-        >
-          <p className={clsx("ios-text")}>Menu</p>
-        </button>
+      {/* <div className={clsx("topBar", "ios-navigationBar")}>
         <h1 className={clsx("ios-text")}>PDX to HND</h1>
         <button
           onClick={() => {
@@ -114,20 +135,28 @@ function Visualizer() {
         >
           <p className={clsx("ios-text")}>Cheat</p>
         </button>
-      </div>
+      </div> */}
       <div id="flyWishy">
         <div id="iframe-parent">
           <div id="iframe" ref={iframeParentRef}></div>
         </div>
       </div>
       <div className={clsx("bottomBar", "ios-navigationBar")}>
-        <button
+        {/* <button
           onClick={() => {
             toggleFullScreen();
           }}
           className={clsx("ios-button")}
         >
           <img src="/images/open-parachute.svg" />
+        </button> */}
+        <button
+          onClick={() => {
+            setShowMenu((prev) => !prev);
+          }}
+          className={clsx("ios-button", "viewButton")}
+        >
+          <p className={clsx("ios-text")}>Menu</p>
         </button>
         <div className="ios-segmentedControl">
           <button
@@ -217,7 +246,6 @@ const StyledWrapper = styled.div`
     flex: 1;
     overflow: hidden;
   }
-
   .topBar,
   .bottomBar {
     display: flex;
