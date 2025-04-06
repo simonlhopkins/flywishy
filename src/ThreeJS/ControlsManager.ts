@@ -10,6 +10,21 @@ export interface IControlsManager {
   lookAtGlobe(): Promise<void>;
 }
 
+interface IdleTweenConfig {
+  startAzimuth: number;
+  startPolar: number;
+  startDistance: number;
+  duration: number;
+  endAzimuth?: number;
+  endPolar?: number;
+  endDistance?: number;
+}
+
+enum ControlState {
+  IDLE,
+  CONTROLLED,
+}
+
 const PLANE_DEFAULT_POLAR_ANGLE = 0.8022233669230078;
 const PLANE_DEFAULT_AZIMUTH_ANGLE = 0.7739323347923857;
 
@@ -22,6 +37,9 @@ class ControlsManager implements IControlsManager {
   private globeQuat: THREE.Quaternion = new THREE.Quaternion();
   private disableAutoRotate = false;
 
+  private controlState: ControlState = ControlState.CONTROLLED;
+  private currentIdleTween: Tween | null = null;
+  private debug = false;
   constructor(
     planet: Planet,
     camera: THREE.PerspectiveCamera,
@@ -49,16 +67,77 @@ class ControlsManager implements IControlsManager {
     this.lookAtPlane();
   }
 
+  private createIdleTween(config: IdleTweenConfig): Promise<void> {
+    const progress = { value: 0 };
+    return new Promise((res, rej) => {
+      this.currentIdleTween = new Tween(progress)
+        .to({ value: 1 }, config.duration)
+        .onUpdate(() => {
+          this.controls.distance = Util.mapRange(
+            progress.value,
+            0,
+            1,
+            config.startDistance,
+            config.endDistance ?? config.startDistance
+          );
+          this.controls.polarAngle = Util.mapRange(
+            progress.value,
+            0,
+            1,
+            config.startPolar,
+            config.endPolar ?? config.startPolar
+          );
+          this.controls.azimuthAngle = Util.mapRange(
+            progress.value,
+            0,
+            1,
+            config.startAzimuth,
+            config.endAzimuth ?? config.startAzimuth
+          );
+        })
+        .easing(Easing.Linear.None)
+        .onComplete(() => {
+          this.createIdleTween(config);
+          res();
+        });
+      this.tweenManager.add(this.currentIdleTween);
+    });
+  }
+
+  private ChangeState(newState: ControlState) {
+    if (this.controlState == newState) return;
+    this.controlState = newState;
+    switch (newState) {
+      case ControlState.IDLE:
+        // this.createIdleTween(config1);
+        break;
+      case ControlState.CONTROLLED:
+        if (this.currentIdleTween) {
+          this.currentIdleTween.stop();
+        }
+        this.currentIdleTween = null;
+        break;
+    }
+  }
+
   private initControlsEventListeners() {
     let userDragging = false;
+    let timeoutId: number | undefined = undefined;
 
     const onRest = () => {
       this.controls.removeEventListener("rest", onRest);
       userDragging = false;
       this.disableAutoRotate = false;
+      console.log("rest");
+
+      timeoutId = window.setTimeout(() => {
+        this.ChangeState(ControlState.IDLE);
+      }, 2000);
     };
 
     this.controls.addEventListener("controlstart", () => {
+      this.ChangeState(ControlState.CONTROLLED);
+      window.clearTimeout(timeoutId);
       this.controls.removeEventListener("rest", onRest);
       userDragging = true;
       this.disableAutoRotate = true;
@@ -77,6 +156,7 @@ class ControlsManager implements IControlsManager {
       this.disableAutoRotate = true;
       this.controls.addEventListener("rest", onRest);
     });
+    onRest();
   }
 
   private initConfettiDragEvent() {
@@ -87,6 +167,11 @@ class ControlsManager implements IControlsManager {
     const confettiThreshold = Util.isMobile() ? 15 : 50;
     this.controls.addEventListener("control", (e) => {
       const currentTime = performance.now();
+      if (this.debug) {
+        console.log(
+          `azimuth: ${this.controls.azimuthAngle}, polar: ${this.controls.polarAngle}, distance: ${this.controls.distance}`
+        );
+      }
       if (
         lastPolarAngle !== null &&
         lastAzimuthAngle !== null &&
@@ -94,9 +179,6 @@ class ControlsManager implements IControlsManager {
       ) {
         // Time difference in seconds
         const deltaTime = (currentTime - lastTime) / 1000;
-        if (Util.isMobile()) {
-          console.log("mobile");
-        }
         if (deltaTime > 0) {
           // Calculate angular velocity
           const polarVelocity =
@@ -224,6 +306,9 @@ class ControlsManager implements IControlsManager {
       this.lookAtPlanePercent.value
     );
     this.controls.update(deltaTime);
+    if (this.controlState == ControlState.IDLE) {
+      this.controls.azimuthAngle += deltaTime * 0.1;
+    }
     if (!this.disableAutoRotate) {
       // this.controls.azimuthAngle += 20 * deltaTime * THREE.MathUtils.DEG2RAD;
     }
@@ -231,5 +316,13 @@ class ControlsManager implements IControlsManager {
     this.camera.quaternion.premultiply(targetQuaternion);
   }
 }
+
+const config1: IdleTweenConfig = {
+  startAzimuth: 0,
+  startPolar: 0.7574337970679396,
+  startDistance: 1,
+  duration: 10000,
+  endAzimuth: Math.PI * 2,
+};
 
 export default ControlsManager;

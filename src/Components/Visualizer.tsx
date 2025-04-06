@@ -7,6 +7,8 @@ import CheatDialog from "./dialogs/CheatDialog";
 import useUserStore from "../Store/UserStore";
 import IntroDialog from "./dialogs/IntroDialog";
 import InFlightMenu from "./InFlightMenu";
+import EmailEntryDialog from "./dialogs/EmailEntryDialog";
+import NowPlaying from "./NowPlaying";
 
 const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
 
@@ -20,18 +22,22 @@ function Visualizer() {
   const iframeParentRef = useRef<HTMLDivElement>(null);
   const cheatDialogRef = useRef<HTMLDialogElement>(null);
   const introDialogRef = useRef<HTMLDialogElement>(null);
+  const emailDialogRef = useRef<HTMLDialogElement>(null);
 
   const [isPlaneView, setIsPlaneView] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
-
   const [disableInput, setDisableInput] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     hasSeenIntro,
     visualizerOptions,
     isPlaying,
+    airplaneMode,
+    user,
     setIsPlaying,
     setVisualizerOptions,
+    setAirplaneMode,
   } = useUserStore();
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
@@ -41,24 +47,24 @@ function Visualizer() {
     }
   }
   useEffect(() => {
-    if (!hasSeenIntro) {
+    if (!hasSeenIntro && user) {
       introDialogRef.current!.showModal();
     }
-  }, [hasSeenIntro]);
+    if (user == null) {
+      emailDialogRef.current!.showModal();
+    }
+  }, [hasSeenIntro, user]);
 
   useEffect(() => {
     if (sceneRef.current) {
       sceneRef.current!.updateVisualizerOptions(visualizerOptions);
-
-      if (!visualizerOptions.airplaneMode) {
-        cheatDialogRef.current!.showModal();
-      }
     }
   }, [visualizerOptions]);
 
   useEffect(() => {
     if (sceneRef.current == null) {
       setDisableInput(true);
+      setLoading(true);
       sceneRef.current = new MainScene(
         document.getElementById("wishyAudio") as HTMLAudioElement,
         iframeParentRef.current!,
@@ -66,6 +72,7 @@ function Visualizer() {
           OnCityUpdate: () => {},
         },
         () => {
+          setLoading(false);
           setDisableInput(false);
         }
       );
@@ -78,7 +85,7 @@ function Visualizer() {
         }
       });
       Events.Get().addEventListener("cityChanged", (e) => {
-        console.log(e.detail.fromCity, e.detail.toCity);
+        // console.log(e.detail.fromCity, e.detail.toCity);
       });
     }
   }, []);
@@ -100,13 +107,11 @@ function Visualizer() {
     } else {
       console.log("cheat code not found.");
     }
-    setVisualizerOptions({
-      ...visualizerOptions,
-      airplaneMode: !visualizerOptions.airplaneMode,
-    });
   };
+
   return (
     <StyledWrapper>
+      <EmailEntryDialog ref={emailDialogRef} />
       <CheatDialog ref={cheatDialogRef} onCheatSubmitted={onCheatSubmitted} />
       <IntroDialog
         ref={introDialogRef}
@@ -118,12 +123,12 @@ function Visualizer() {
       <audio
         style={{ width: "100%" }}
         id="wishyAudio"
-        // hidden
+        hidden
         controls
         crossOrigin="anonymous"
         preload="metadata"
         loop
-        src="https://d1d621jepmseha.cloudfront.net/Wishy+-+Planet+Popstar+(Official+EP+Stream)+%5BuKu6TFNjkNc%5D.mp3"
+        src="https://d1d621jepmseha.cloudfront.net/WishyPlanetPopstarStream.mp3"
       ></audio>
       {/* <div className={clsx("topBar", "ios-navigationBar")}>
         <h1 className={clsx("ios-text")}>PDX to HND</h1>
@@ -136,7 +141,9 @@ function Visualizer() {
           <p className={clsx("ios-text")}>Cheat</p>
         </button>
       </div> */}
-      <div id="flyWishy">
+      <NowPlaying />
+      {loading && <div className="loading">loading...</div>}
+      <div id="flyWishy" hidden={loading}>
         <div id="iframe-parent">
           <div id="iframe" ref={iframeParentRef}></div>
         </div>
@@ -151,6 +158,7 @@ function Visualizer() {
           <img src="/images/open-parachute.svg" />
         </button> */}
         <button
+          disabled={disableInput}
           onClick={() => {
             setShowMenu((prev) => !prev);
           }}
@@ -187,6 +195,7 @@ function Visualizer() {
           </button>
         </div>
         <button
+          disabled={disableInput}
           onClick={() => {
             setIsPlaying(!isPlaying);
           }}
@@ -206,6 +215,12 @@ const StyledWrapper = styled.div`
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
   .ios-modal .buttonContainer {
     display: inline-flex;
     width: 100%;
@@ -227,6 +242,8 @@ const StyledWrapper = styled.div`
     height: 100%;
     width: 100%;
     display: flex;
+    display: none;
+
     align-items: center;
     justify-content: center;
     background-color: black;
@@ -245,6 +262,10 @@ const StyledWrapper = styled.div`
     position: relative;
     flex: 1;
     overflow: hidden;
+    background-image: url("/images/your_name_clouds.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
   .topBar,
   .bottomBar {

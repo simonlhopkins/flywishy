@@ -19,7 +19,7 @@ function IntroDialog({ ref, onPlay }: Props) {
       <p style={{ marginBottom: "10px" }} className={clsx("ios-text")}>
         Welcome aboard. On this flight you'll get an exclusive listen to Wishy's
         new EP, Planet Popstar! Whenever you're ready, click the play button,
-        and enjoy the flight
+        and enjoy the flight!
       </p>
       <div style={{ marginTop: "10px" }} className="buttonContainer">
         <button

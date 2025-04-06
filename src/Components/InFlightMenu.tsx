@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import styled from "styled-components";
 import useUserStore from "../Store/UserStore";
+import { useRef } from "react";
+import CopyrightDialog from "./dialogs/CopyrightDialog";
 
 interface Props {
   showing: boolean;
@@ -17,121 +19,151 @@ const links: LinkData[] = [
   { label: "test", href: "/" },
 ];
 function InFlightMenu({ showing, onClose }: Props) {
-  const { visualizerOptions, setVisualizerOptions, isPlaying, setIsPlaying } =
-    useUserStore();
+  const {
+    visualizerOptions,
+    setVisualizerOptions,
+    isPlaying,
+    setIsPlaying,
+    airplaneMode,
+    setAirplaneMode,
+  } = useUserStore();
+
+  const copyrightDialogRef = useRef<HTMLDialogElement>(null);
 
   return (
-    <StyledWrapper className={clsx(showing && "showing")}>
-      <div className="overlay"></div>
-      <div className="headerArea">
-        <img src="/images/wishy_logo.png" alt="" />
-        <h1>Planet Popstar</h1>
-        <div className="bottomText">
-          <p>In Flight Menu</p>
-          {!visualizerOptions.airplaneMode && (
-            <p>Please turn Airplane Mode back on</p>
-          )}
-        </div>
-      </div>
-      <div className="side">
-        <button onClick={onClose}>
-          <img src="/images/closeX.svg" alt="" />
-        </button>
-        <div>
-          <p>hello</p>
-        </div>
-      </div>
-      <div className="iconArea">
-        <button
-          className={clsx(!visualizerOptions.waveformEnabled && "deactivated")}
-          onClick={() => {
-            setVisualizerOptions({
-              ...visualizerOptions,
-              waveformEnabled: !visualizerOptions.waveformEnabled,
-            });
-          }}
-        >
-          <img src="/images/icons/wave.svg" alt="" />
-        </button>
-        <button
-          className={clsx(!visualizerOptions.flower && "deactivated")}
-          onClick={() => {
-            setVisualizerOptions({
-              ...visualizerOptions,
-              flower: !visualizerOptions.flower,
-            });
-          }}
-        >
-          <img src="/images/icons/flower.svg" alt="" />
-        </button>
-        <button
-          className={clsx(!visualizerOptions.wishyMode && "deactivated")}
-          onClick={() => {
-            setVisualizerOptions({
-              ...visualizerOptions,
-              wishyMode: !visualizerOptions.wishyMode,
-            });
-          }}
-        >
-          <img src="/images/icons/winspear.png" alt="" />
-        </button>
-        <button
-          onClick={() => {
-            setIsPlaying(!isPlaying);
-          }}
-        >
-          <img
-            src={
-              isPlaying ? "/images/icons/pause.svg" : "/images/icons/play.svg"
-            }
-            alt=""
-          />
-        </button>
-        <button className="deactivated">
-          <img src="/images/icons/smoking.svg" alt="" />
-        </button>
-        <button
-          onClick={() => {
-            setVisualizerOptions({
-              ...visualizerOptions,
-              airplaneMode: !visualizerOptions.airplaneMode,
-            });
-          }}
-          className={clsx(!visualizerOptions.airplaneMode && "deactivated")}
-        >
-          <img src="/images/icons/airplane.svg" alt="" />
-        </button>
-      </div>
-      <div className="buttonArea">
-        <a href="https://winspear.biz/store/wishy" target="_blank">
-          <p>Merch</p>
-        </a>
-        <a
-          href="https://winspear.biz/wishy#:~:text=in%20high%20school.%22-,TOUR%20DATES,-MAY%209"
-          target="_blank"
-        >
-          <p>Tour Dates</p>
-        </a>
-        <a href="https://wishy.bandcamp.com/" target="_blank">
-          <p>Music</p>
-        </a>
-        <a href="/">
-          <p>More</p>
-        </a>
-      </div>
+    <>
+      <CopyrightDialog ref={copyrightDialogRef} />
+      <StyledWrapper className={clsx(showing && "showing")}>
+        <div className="overlay"></div>
+        <div className="headerArea">
+          <img src="/images/wishy_logo.png" alt="" />
+          <div className="planeImgParent">
+            <img src="/images/render.png" alt="" />
+          </div>
 
-      <div className="creditsArea">
-        <a href="">credits</a>
-        <a href="">copywrite</a>
-      </div>
-    </StyledWrapper>
+          <div className="bottomText">
+            {!airplaneMode && (
+              <p className="airplaneModeText">
+                Please turn Airplane Mode back on
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="side">
+          <button onClick={onClose}>
+            <img src="/images/closeX.svg" alt="" />
+          </button>
+          <div>
+            <p>Planet Popstar coming out April 25!</p>
+          </div>
+        </div>
+        <div className="iconArea">
+          <button
+            className={clsx(
+              !visualizerOptions.waveformEnabled && "deactivated"
+            )}
+            onClick={() => {
+              setVisualizerOptions({
+                ...visualizerOptions,
+                waveformEnabled: !visualizerOptions.waveformEnabled,
+              });
+            }}
+          >
+            <img src="/images/icons/wave.svg" alt="" />
+          </button>
+          <button
+            className={clsx(!visualizerOptions.flower && "deactivated")}
+            onClick={() => {
+              setVisualizerOptions({
+                ...visualizerOptions,
+                flower: !visualizerOptions.flower,
+              });
+            }}
+          >
+            <img src="/images/icons/flower.svg" alt="" />
+          </button>
+          <button
+            className={clsx(!visualizerOptions.wishyMode && "deactivated")}
+            onClick={() => {
+              setVisualizerOptions({
+                ...visualizerOptions,
+                wishyMode: !visualizerOptions.wishyMode,
+              });
+            }}
+          >
+            <img src="/images/icons/winspear.png" alt="" />
+          </button>
+          <button
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+            }}
+          >
+            <img
+              src={
+                isPlaying ? "/images/icons/pause.svg" : "/images/icons/play.svg"
+              }
+              alt=""
+            />
+          </button>
+          <button className="deactivated">
+            <img
+              src="/images/icons/smoking.svg"
+              alt=""
+              style={{ transform: "translateY(-5%)" }}
+            />
+          </button>
+          <button
+            onClick={() => {
+              setAirplaneMode(!airplaneMode);
+            }}
+            className={clsx(!airplaneMode && "deactivated")}
+          >
+            <img
+              src="/images/icons/airplane.svg"
+              alt=""
+              style={{ transform: "translateX(-5%) translateY(5%)" }}
+            />
+          </button>
+        </div>
+        <div className="buttonArea">
+          <a href="https://winspear.biz/store/wishy" target="_blank">
+            <p>Merch</p>
+          </a>
+          <a
+            href="https://winspear.biz/wishy#:~:text=in%20high%20school.%22-,TOUR%20DATES,-MAY%209"
+            target="_blank"
+          >
+            <p>Tour</p>
+          </a>
+          <a href="https://wishy.bandcamp.com/" target="_blank">
+            <p>Music</p>
+          </a>
+          <a href="https://www.youtube.com/watch?v=v-JV3dyxvoM" target="_blank">
+            <p>More</p>
+          </a>
+        </div>
+
+        <div className="creditsArea">
+          <a href="">credits</a>
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              copyrightDialogRef.current!.showModal();
+            }}
+          >
+            copyright
+          </a>
+        </div>
+      </StyledWrapper>
+    </>
   );
 }
 
 const StyledWrapper = styled.div`
   position: absolute;
   display: grid;
-  grid-template-columns: repeat(6, 1fr) 50px;
+  grid-template-columns: repeat(6, 1fr) 60px;
   grid-template-rows: repeat(11, 1fr) 50px;
   font-family: Verdana;
   row-gap: 10px;
@@ -187,9 +219,17 @@ const StyledWrapper = styled.div`
         width: 80%;
       }
     }
-    > div {
+    div {
       flex: 1;
-      writing-mode: sideways-lr;
+      display: flex;
+      writing-mode: sideways-rl;
+      align-items: center;
+      p {
+        color: beige;
+        font-size: 1.5rem;
+        margin: 0;
+        margin-top: 20px;
+      }
     }
     background-color: #e5c653;
   }
@@ -201,8 +241,30 @@ const StyledWrapper = styled.div`
     grid-template-rows: repeat(4, 1fr);
     grid-template-columns: 1fr;
     background-color: #5ecca7;
+    position: relative;
+
+    .planeImgParent {
+      grid-row: 3 / 4;
+      position: relative;
+      width: 110%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        position: absolute;
+        width: 100%;
+      }
+    }
+    .airplaneModeText {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
     h1 {
+      z-index: 1;
+      grid-row: 2/ 3;
       margin: 0;
+      font-size: 1.8rem;
+      text-shadow: 0 0 5px white;
     }
     p {
       margin: 0;
@@ -211,11 +273,21 @@ const StyledWrapper = styled.div`
       width: 100%;
       height: auto;
       object-fit: contain;
+      pointer-events: none;
     }
 
     .bottomText {
       grid-row: -1 / -2;
       text-align: right;
+      z-index: 10;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    button {
+      transition: transform 100ms;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
   }
   .iconArea {
@@ -226,28 +298,32 @@ const StyledWrapper = styled.div`
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     justify-items: center;
+    gap: 10px;
     button {
-      width: 80px;
+      /* height: 100%; */
+      height: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      /* @media only screen and (max-width: 600px) {
+        width: 3rem;
+      } */
       aspect-ratio: 1;
       border-radius: 999px;
       border: 5px solid green;
       background-color: transparent;
       color: inherit;
       cursor: help;
-      transition: transform 200ms;
       display: flex;
       justify-content: center;
       align-items: center;
       user-select: none;
       touch-action: manipulation;
       img {
-        width: 80%;
+        height: 80%;
         filter: invert(0%) sepia(96%) saturate(7476%) hue-rotate(44deg)
           brightness(92%) contrast(98%);
       }
-      &:hover {
-        transform: scale(1.1);
-      }
+
       &:active {
         background-color: burlywood;
         transform: scale(0.97);
@@ -280,6 +356,7 @@ const StyledWrapper = styled.div`
     border: 4px solid #5ecca7;
     border-radius: 10px;
     margin: 0px 10px;
+    font-size: 1.5rem;
     a {
       display: flex;
       align-items: center;
@@ -292,8 +369,9 @@ const StyledWrapper = styled.div`
       transition: transform 200ms;
       color: beige;
       font-family: inherit;
-      font-size: 1.5rem;
-
+      p {
+        margin: 0;
+      }
       img {
         /* height: 10px; */
         width: 50%;

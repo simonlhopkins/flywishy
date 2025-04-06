@@ -12,7 +12,6 @@ function App() {
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Visualizer />} />
           </Route>
-          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Router>
     </>

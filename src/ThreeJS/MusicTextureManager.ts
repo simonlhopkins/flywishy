@@ -108,8 +108,8 @@ class MusicTextureManager {
         .map((value) => Util.mapRange(value as number, -1, 1, 0, 255)),
       0
     );
-
-    this.waveformTexture.image.data = finalArr;
+    const smoothedFinalArr = Util.smoothArray([...finalArr], 20);
+    this.waveformTexture.image.data = new Uint8Array(smoothedFinalArr);
     this.waveformTexture.needsUpdate = true; // Mark texture for update
   }
   private updateEnergyHistoryTexture() {

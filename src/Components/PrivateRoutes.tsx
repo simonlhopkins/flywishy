@@ -1,8 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useUserStore from "../Store/UserStore";
+import EmailEntryDialog from "./dialogs/EmailEntryDialog";
 const PrivateRoutes = () => {
-  const { user } = useUserStore();
-  return user ? <Outlet /> : <Navigate to="/login" />;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 };
 
 export default PrivateRoutes;

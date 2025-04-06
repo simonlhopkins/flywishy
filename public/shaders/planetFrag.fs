@@ -141,7 +141,7 @@ void main() {
 
     float waveformValue =(texture2D(uWaveform, vec2(vUv.x, 0.)).r - 0.5) * 2.;
     vec2 waveformUV = (vUv *2.)-1.;
-    float dist = abs(waveformUV.y * 7.) - abs(waveformValue);
+    float dist = abs(waveformUV.y * 3.) - abs(waveformValue);
     dist = getToggle(0) ? dist: 1.;
     vec3 finalColor = oceanShiftColor + c * 0.5;
     finalColor = mix(1.-finalColor, finalColor, smoothstep(0.01, 0.01, dist));

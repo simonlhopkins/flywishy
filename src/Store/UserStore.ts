@@ -1,14 +1,14 @@
 import { create } from "zustand";
+import { IPlanetShaderOptions } from "../ThreeJS/Planet";
 
 // Type for the user object
 interface User {
   email: string;
 }
 
-export interface VisualizerOptions {
+export interface VisualizerOptions extends IPlanetShaderOptions {
   waveformEnabled: boolean;
   flower: boolean;
-  airplaneMode: boolean;
   wishyMode: boolean;
 }
 
@@ -18,11 +18,13 @@ interface UserStore {
   hasSeenIntro: boolean;
   visualizerOptions: VisualizerOptions;
   isPlaying: boolean;
+  airplaneMode: boolean;
   setUser: (email: string) => void;
   clearUser: () => void;
   setHasSeenIntro: (seen: boolean) => void;
   setVisualizerOptions: (options: VisualizerOptions) => void;
   setIsPlaying: (isPlaying: boolean) => void;
+  setAirplaneMode: (airplaneMode: boolean) => void;
 }
 
 // LocalStorage persistence handler
@@ -37,10 +39,10 @@ const useUserStore = create<UserStore>((set) => {
   return {
     user: loadOrDefault<User | null>("user", null),
     hasSeenIntro: loadOrDefault<boolean>("hasSeenIntro", false),
+    airplaneMode: true,
     visualizerOptions: {
       waveformEnabled: false,
       flower: false,
-      airplaneMode: true,
       wishyMode: false,
     },
     isPlaying: false,
@@ -55,15 +57,18 @@ const useUserStore = create<UserStore>((set) => {
       localStorage.removeItem(localStorageKey);
       set({ user: null });
     },
-    setHasSeenIntro: (seen) => {
-      localStorage.setItem("hasSeenIntro", String(seen));
-      set({ hasSeenIntro: seen });
+    setHasSeenIntro: (hasSeenIntro) => {
+      localStorage.setItem("hasSeenIntro", String(hasSeenIntro));
+      set({ hasSeenIntro });
     },
-    setVisualizerOptions: (options) => {
-      set({ visualizerOptions: options });
+    setVisualizerOptions: (visualizerOptions) => {
+      set({ visualizerOptions });
     },
     setIsPlaying: (isPlaying) => {
-      set({ isPlaying: isPlaying });
+      set({ isPlaying });
+    },
+    setAirplaneMode: (airplaneMode) => {
+      set({ airplaneMode });
     },
   };
 });

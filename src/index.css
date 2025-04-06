@@ -75,6 +75,7 @@ body {
 .ios-text {
   color: white;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+  font-weight: bold;
 }
 
 .ios-segmentedControl {
@@ -111,9 +112,11 @@ body {
   text-align: center;
   font-weight: normal;
   font-size: 1.3rem;
+  transition: opacity 0.5s;
 }
 input {
   font-size: 16px;
+  line-height: 32px;
 }
 .ios-modal input {
   background: white;
@@ -138,6 +141,9 @@ input {
 .ios-modal h1 {
   font-size: 2rem;
   margin: 0px;
+}
+.ios-modal p {
+  margin: 10px;
 }
 
 .ios-modal button {
@@ -169,7 +175,25 @@ input {
 }
 .ios-modal .gloss {
   position: absolute;
+  pointer-events: none;
   left: 0px;
   top: 0px;
   width: 100%;
+}
+
+dialog:open {
+  opacity: 1;
+}
+dialog {
+  opacity: 0;
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out,
+    overlay 0.7s ease-out allow-discrete, display 0.7s ease-out allow-discrete;
+  /* Equivalent to
+  transition: all 0.7s allow-discrete; */
+}
+
+@starting-style {
+  dialog:open {
+    opacity: 0;
+  }
 }

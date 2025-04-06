@@ -34,9 +34,9 @@ class MainScene {
     // const light = new THREE.AmbientLight(0xffffff); // soft white light
     // scene.add(light);
     // planeScene.add(light);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1); // Increase intensity
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increase intensity
     scene.add(ambientLight);
-    const light = new THREE.DirectionalLight(0xffffff, 1); // (color, intensity)
+    const light = new THREE.DirectionalLight(0xffffff, 1.5); // (color, intensity)
 
     // Set light direction
     light.position.set(5, 10, 5); // X, Y, Z position
@@ -88,10 +88,11 @@ class MainScene {
   private initializeIframe(element: HTMLDivElement): Promise<YT.Player> {
     return new Promise<YT.Player>((res, rej) => {
       const player = new YT.Player(element, {
-        videoId: "uKu6TFNjkNc",
+        videoId: "btk4229qI04",
         playerVars: {
           rel: 0,
           mute: 1,
+          loop: 1,
         },
         events: {
           onReady: () => {
@@ -215,15 +216,7 @@ class MainScene {
 
   public updateVisualizerOptions(visualizerOptions: VisualizerOptions) {
     if (this.planet) {
-      // if (visualizerOptions.waveformEnabled) {
-      //   this.controlsManager?.lookAtGlobe();
-      // }
-      console.log(visualizerOptions.flower);
-      this.planet.updateShaderOptions(
-        visualizerOptions.waveformEnabled,
-        visualizerOptions.flower,
-        visualizerOptions.wishyMode
-      );
+      this.planet.updateShaderOptions(visualizerOptions);
     }
   }
 

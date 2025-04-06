@@ -13,11 +13,16 @@ import Events from "../Events";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
-class ShaderOptions {
+export interface IPlanetShaderOptions {
+  waveformEnabled: boolean;
+  flower: boolean;
+  wishyMode: boolean;
+}
+
+class PlanetShaderOptions implements IPlanetShaderOptions {
   waveformEnabled: boolean = false;
   flower: boolean = false;
   wishyMode: boolean = false;
-
   encode(): number {
     let packed = 0;
     const toggles = [this.waveformEnabled, this.flower, this.wishyMode];
@@ -45,7 +50,7 @@ class Planet {
   private atmosphere: Atmosphere;
   private radius = 4;
   private planeManager: PlaneManager;
-  private shaderOptions: ShaderOptions = new ShaderOptions();
+  private shaderOptions = new PlanetShaderOptions();
   constructor(
     scene: THREE.Scene,
     camera: THREE.Camera,
@@ -104,21 +109,11 @@ class Planet {
 
     this.createPlaneTween(cities);
     this.tweenManager.pause();
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "w" || event.key === "W") {
-        this.shaderOptions.waveformEnabled =
-          !this.shaderOptions.waveformEnabled;
-      }
-    });
   }
-  public updateShaderOptions(
-    waveformEnabled: boolean,
-    useFlower: boolean,
-    useWishyMode: boolean
-  ) {
-    this.shaderOptions.waveformEnabled = waveformEnabled;
-    this.shaderOptions.flower = useFlower;
-    this.shaderOptions.wishyMode = useWishyMode;
+  public updateShaderOptions(options: IPlanetShaderOptions) {
+    this.shaderOptions.waveformEnabled = options.waveformEnabled;
+    this.shaderOptions.flower = options.flower;
+    this.shaderOptions.wishyMode = options.wishyMode;
   }
   public updateZoomScale(zoom: number) {
     const textScale = Util.mapRange(

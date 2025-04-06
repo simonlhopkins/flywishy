@@ -13,6 +13,15 @@ class TweenManager {
       tween.pause();
     });
   }
+  stopTween(tween: Tween) {
+    const assocTween = this.group
+      .getAll()
+      .find((t) => tween.getId() == t.getId());
+    if (assocTween) {
+      assocTween.stop();
+      this.group.remove(assocTween);
+    }
+  }
   resume() {
     this.group.getAll().forEach((tween) => {
       tween.resume();
