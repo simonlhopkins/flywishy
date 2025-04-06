@@ -180,20 +180,3 @@ input {
   top: 0px;
   width: 100%;
 }
-
-dialog:open {
-  opacity: 1;
-}
-dialog {
-  opacity: 0;
-  transition: opacity 0.7s ease-out, transform 0.7s ease-out,
-    overlay 0.7s ease-out allow-discrete, display 0.7s ease-out allow-discrete;
-  /* Equivalent to
-  transition: all 0.7s allow-discrete; */
-}
-
-@starting-style {
-  dialog:open {
-    opacity: 0;
-  }
-}
