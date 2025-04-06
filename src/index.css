@@ -144,6 +144,7 @@ input {
 }
 .ios-modal p {
   margin: 10px;
+  color: white;
 }
 
 .ios-modal button {

@@ -259,7 +259,9 @@ class MainScene {
     const noiseTexture = new THREE.TextureLoader().load(
       "./images/noiseTexture.png"
     );
-    const whiteSquare = new THREE.TextureLoader().load("./images/whiteSquare");
+    const whiteSquare = new THREE.TextureLoader().load(
+      "./images/whiteSquare.png"
+    );
     const vertSource = await (await fetch("./shaders/planetVert.vs")).text();
     const fragSource = await (await fetch("./shaders/planetFrag.fs")).text();
 
