@@ -222,7 +222,7 @@ const StyledWrapper = styled.div`
     div {
       flex: 1;
       display: flex;
-      writing-mode: sideways-rl;
+      writing-mode: vertical-rl;
       align-items: center;
       p {
         color: beige;

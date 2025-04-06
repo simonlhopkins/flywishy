@@ -59,11 +59,6 @@ class MainScene {
     parentDiv.appendChild(renderer.domElement);
     parentDiv.appendChild(this.stats.dom);
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "s" || event.key === "S") {
-        this.toggleStats();
-      }
-    });
     this.toggleStats();
     window.addEventListener("resize", () => {
       const parentDiv = document.getElementById("flyWishy")!;

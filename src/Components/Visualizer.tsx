@@ -116,7 +116,7 @@ function Visualizer() {
       <IntroDialog
         ref={introDialogRef}
         onPlay={() => {
-          sceneRef.current!.play();
+          setIsPlaying(true);
         }}
       />
       <InFlightMenu showing={showMenu} onClose={() => setShowMenu(false)} />
