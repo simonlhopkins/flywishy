@@ -221,11 +221,11 @@ class MainScene {
   }
 
   public play() {
-    // if (!this.hasBeenWarnedAboutMusic) {
-    //   alert(
-    //     "music is about to play! Grab headphones if you want or don't idgaf"
-    //   );
-    // }
+    if (!this.hasBeenWarnedAboutMusic) {
+      alert(
+        "music is about to play! Grab headphones if you want or don't idgaf"
+      );
+    }
 
     this.hasBeenWarnedAboutMusic = true;
     this.musicTextureManager.initialize().then(() => {

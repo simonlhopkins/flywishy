@@ -89,8 +89,8 @@ class Planet {
       scene.add(newText.sprite);
     });
 
-    this.startCity = cities[0];
-    this.endCity = cities[0];
+    this.startCity = cities[Math.floor(cities.length * Math.random())];
+    this.endCity = this.startCity;
 
     scene.add(planeMesh);
 
@@ -105,7 +105,7 @@ class Planet {
     this.shaderOptions.wishyMode = options.wishyMode;
   }
   public updateZoomScale(cameraDistance: number) {
-    const textScale = Util.mapRange(cameraDistance, 0, 15, 0.1, 2);
+    const textScale = Util.mapRange(cameraDistance, 0, 15, 0.2, 1.8);
     this.cityLabels.forEach((item) => {
       item.setScale(textScale);
     });

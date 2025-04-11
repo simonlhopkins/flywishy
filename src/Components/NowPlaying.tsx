@@ -72,16 +72,14 @@ function NowPlaying() {
   }
   return (
     <StyledWrapper>
-      {new Array(20).fill("").map((_, i) => (
+      {new Array(10).fill("").map((_, i) => (
         <div className="contentWrapper" key={i}>
           <p className="ios-text">
             NOW PLAYING {currentSong ? currentSong.name.toUpperCase() : "..."}
           </p>
-          {journeyInfo && (
-            <p className="ios-text">
-              {journeyInfoToString(journeyInfo).toUpperCase()}
-            </p>
-          )}
+          <p className="ios-text journeyText">
+            {journeyInfo && journeyInfoToString(journeyInfo).toUpperCase()}
+          </p>
         </div>
       ))}
     </StyledWrapper>
@@ -108,8 +106,16 @@ const StyledWrapper = styled.div`
     display: inline-flex;
     animation: ${scroll} 5s linear infinite;
     margin: 0;
-    padding: 10px;
+    padding: 0 10px;
     text-wrap: nowrap;
+    box-sizing: border-box;
+    text-align: center;
+    p {
+      overflow: hidden;
+    }
+  }
+  .journeyText {
+    width: 24rem;
   }
 `;
 

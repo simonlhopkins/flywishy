@@ -105,7 +105,7 @@ function InFlightMenu({ showing, onClose }: Props) {
               alt=""
             />
           </button>
-          <button className="deactivated">
+          <button className="deactivated smoking">
             <img
               src="/images/icons/smoking.svg"
               alt=""
@@ -255,9 +255,24 @@ const StyledWrapper = styled.div`
         width: 100%;
       }
     }
+    @keyframes pulseError {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
     .airplaneModeText {
       font-weight: bold;
       font-size: 1.2rem;
+      color: red;
+      animation: pulseError 1s ease-in-out infinite;
     }
     h1 {
       z-index: 1;
@@ -313,6 +328,9 @@ const StyledWrapper = styled.div`
       background-color: transparent;
       color: inherit;
       cursor: help;
+      &.smoking {
+        cursor: not-allowed;
+      }
       display: flex;
       justify-content: center;
       align-items: center;
@@ -361,6 +379,8 @@ const StyledWrapper = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
+      text-decoration: none;
+      font-weight: bold;
       /* flex-direction: column; */
       padding: 10px;
       border: 5px solid beige;

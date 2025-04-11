@@ -8,6 +8,7 @@ class MusicTextureManager {
   private waveform: Tone.Analyser = new Tone.Analyser("waveform", 1024);
   private gainNode: Tone.Gain = new Tone.Gain();
   private audioNode: MediaElementAudioSourceNode | null = null;
+  private micNode = new Tone.UserMedia();
   private bassAnalyzer: BinAnalyzer = new BinAnalyzer();
   public lowMidAnalyzer: BinAnalyzer = new BinAnalyzer();
   public midAnalyzer: BinAnalyzer = new BinAnalyzer();
@@ -33,9 +34,10 @@ class MusicTextureManager {
       this.audioNode = Tone.getContext().createMediaElementSource(
         this.mediaElement
       );
-      Tone.connect(this.audioNode, this.fft);
-      Tone.connect(this.audioNode, this.waveform);
-      Tone.connect(this.audioNode, this.gainNode);
+      const sourceNode = this.micNode;
+      Tone.connect(sourceNode, this.fft);
+      Tone.connect(sourceNode, this.waveform);
+      // Tone.connect(sourceNode, this.gainNode);
       this.mediaElement.muted = false;
 
       this.gainNode.toDestination();
@@ -66,7 +68,7 @@ class MusicTextureManager {
     this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
 
     // Fade to 0 over 1 second
-    const fadeTime = 0.1;
+    const fadeTime = 0.3;
     this.gainNode.gain.linearRampTo(0, fadeTime, now);
     this.pauseTimeout = window.setTimeout(() => {
       this.mediaElement.pause();
@@ -85,7 +87,7 @@ class MusicTextureManager {
     const now = Tone.now();
     this.gainNode.gain.setValueAtTime(0, now);
     console.log(now);
-    this.gainNode.gain.linearRampTo(1, 0.3, now);
+    this.gainNode.gain.linearRampTo(1, 0.5, now);
     this.mediaElement.play();
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {

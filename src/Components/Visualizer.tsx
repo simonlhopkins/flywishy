@@ -232,6 +232,17 @@ const StyledWrapper = styled.div`
     filter: invert(100%) sepia(0%) saturate(12%) hue-rotate(226deg)
       brightness(100%) contrast(100%);
   }
+  .pausedParent {
+    position: absolute;
+    left: 0px;
+    height: 0px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
   #iframe-parent {
     position: absolute;
     z-index: -10;
