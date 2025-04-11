@@ -5,6 +5,7 @@ uniform sampler2D uTexture;
 uniform sampler2D uEnergyHistory;
 uniform sampler2D uWaveform;
 uniform sampler2D uDisplacementMap;
+uniform sampler2D uWinspearSDF;
 
 uniform float uTime;
 uniform vec3 uDotPosition;
@@ -87,6 +88,11 @@ float sdW(vec2 p) {
     return min(min(d1, d2), min(d3, d4));
 }
 
+float sdWinspear(vec2 p){
+
+    return texture2D(uWinspearSDF, p).r;
+}
+
 
 void main() {
     vec4 color = texture2D(uTexture, vUv);
@@ -115,7 +121,7 @@ void main() {
     float c = texture2D(uEnergyHistory, vec2(getBinX(1.), (1. - p) + Yoffset)).r;
      
    if(getToggle(2)){
-        c = texture2D(uEnergyHistory, vec2(getBinX(1.), sdW(
+        c = texture2D(uEnergyHistory, vec2(getBinX(1.), sdWinspear(
             planeUV 
             + vec2(0.5)
             + vec2(0., Yoffset)

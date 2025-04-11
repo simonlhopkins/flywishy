@@ -261,6 +261,9 @@ class MainScene {
     const texture = new THREE.TextureLoader().load(
       "./images/8k_earth_daymap_small.jpg"
     );
+    const winspearSDF = new THREE.TextureLoader().load(
+      "./images/winspearSDF.png"
+    );
     const noiseTexture = new THREE.TextureLoader().load(
       "./images/noiseTexture.png"
     );
@@ -272,6 +275,7 @@ class MainScene {
       uniforms: {
         uTexture: { value: texture },
         uDisplacementMap: { value: noiseTexture },
+        uWinspearSDF: { value: winspearSDF },
         uDotPosition: { value: new THREE.Vector3(0, 0, 0) },
         uEnergyHistory: { value: whiteSquare },
         uWaveform: { value: whiteSquare },
