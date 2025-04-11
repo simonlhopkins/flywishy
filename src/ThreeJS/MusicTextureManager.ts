@@ -6,7 +6,7 @@ import BinAnalyzer from "../MusicAnalyzers/BinAnalyzer";
 class MusicTextureManager {
   private fft: Tone.FFT = new Tone.FFT(1024);
   private waveform: Tone.Analyser = new Tone.Analyser("waveform", 1024);
-
+  private gainNode: Tone.Gain = new Tone.Gain();
   private audioNode: MediaElementAudioSourceNode | null = null;
   private bassAnalyzer: BinAnalyzer = new BinAnalyzer();
   public lowMidAnalyzer: BinAnalyzer = new BinAnalyzer();
@@ -19,6 +19,7 @@ class MusicTextureManager {
   private waveformTexture = this.createWaveformTexture();
   private mediaElement: HTMLMediaElement;
   private nodesInitialized = false;
+  private pauseTimeout: number | null = null;
   constructor(mediaElement: HTMLMediaElement) {
     this.mediaElement = mediaElement;
     this.waveform.smoothing = 1;
@@ -34,9 +35,10 @@ class MusicTextureManager {
       );
       Tone.connect(this.audioNode, this.fft);
       Tone.connect(this.audioNode, this.waveform);
+      Tone.connect(this.audioNode, this.gainNode);
       this.mediaElement.muted = false;
 
-      this.fft.toDestination();
+      this.gainNode.toDestination();
       this.nodesInitialized = true;
     }
   }
@@ -55,25 +57,42 @@ class MusicTextureManager {
     return averageDb;
   }
   pause() {
-    if (this.audioNode) {
-      this.audioNode.disconnect();
-    }
+    const now = Tone.now();
+
+    // Cancel any previous automation
+    this.gainNode.gain.cancelScheduledValues(now);
+
+    // Set current value (needed if there's automation already going on)
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+
+    // Fade to 0 over 1 second
+    const fadeTime = 0.1;
+    this.gainNode.gain.linearRampTo(0, fadeTime, now);
+    this.pauseTimeout = window.setTimeout(() => {
+      this.mediaElement.pause();
+      if (this.audioNode) {
+        this.audioNode.disconnect();
+      }
+    }, fadeTime * 1000);
   }
   play() {
+    if (this.pauseTimeout) window.clearTimeout(this.pauseTimeout);
     if (this.audioNode) {
+      Tone.connect(this.audioNode, this.gainNode);
       Tone.connect(this.audioNode, this.fft);
       Tone.connect(this.audioNode, this.waveform);
     }
+    const now = Tone.now();
+    this.gainNode.gain.setValueAtTime(0, now);
+    console.log(now);
+    this.gainNode.gain.linearRampTo(1, 0.3, now);
+    this.mediaElement.play();
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {
     const sampleRate = Tone.getContext().sampleRate;
     return this.averageEnergyInDb(
       Util.getEnergyBins(128, fft, sampleRate, low, high)
     );
-  }
-
-  public onBufferCreated(buffer: BufferSource) {
-    console.log(buffer);
   }
 
   getEnergyHistoryTexture() {

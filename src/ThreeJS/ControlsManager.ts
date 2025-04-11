@@ -4,6 +4,7 @@ import Planet from "./Planet";
 import { Util } from "../Util";
 import TweenManager from "./TweenManager";
 import { Easing, Tween } from "@tweenjs/tween.js";
+import { ACTION } from "camera-controls/dist/types";
 
 export interface IControlsManager {
   lookAtPlane(): Promise<void>;
@@ -33,7 +34,7 @@ class ControlsManager implements IControlsManager {
   private controls: CameraControls;
   private camera: THREE.PerspectiveCamera;
   private tweenManager: TweenManager;
-  private lookAtPlanePercent = { value: 1 };
+  private lookAtPlanePercent = { value: 0 };
   private globeQuat: THREE.Quaternion = new THREE.Quaternion();
   private disableAutoRotate = false;
 
@@ -63,7 +64,7 @@ class ControlsManager implements IControlsManager {
       PLANE_DEFAULT_POLAR_ANGLE,
       PLANE_DEFAULT_AZIMUTH_ANGLE
     );
-    this.initControlsEventListeners();
+    this.initControlsEventListeners(domElement);
     this.lookAtPlane();
   }
 
@@ -105,7 +106,6 @@ class ControlsManager implements IControlsManager {
   }
 
   private ChangeState(newState: ControlState) {
-    if (this.controlState == newState) return;
     this.controlState = newState;
     switch (newState) {
       case ControlState.IDLE:
@@ -120,7 +120,39 @@ class ControlsManager implements IControlsManager {
     }
   }
 
-  private initControlsEventListeners() {
+  private updateCursor(action: ACTION, domElement: HTMLElement) {
+    switch (action) {
+      case CameraControls.ACTION.ROTATE:
+      case CameraControls.ACTION.TOUCH_ROTATE: {
+        domElement.classList.add("-dragging");
+        break;
+      }
+
+      case CameraControls.ACTION.TRUCK:
+      case CameraControls.ACTION.TOUCH_TRUCK: {
+        domElement.classList.add("-moving");
+        break;
+      }
+
+      case CameraControls.ACTION.DOLLY:
+      case CameraControls.ACTION.ZOOM: {
+        domElement.classList.add("-zoomIn");
+        break;
+      }
+
+      case CameraControls.ACTION.TOUCH_DOLLY_TRUCK:
+      case CameraControls.ACTION.TOUCH_ZOOM_TRUCK: {
+        domElement.classList.add("-moving");
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  }
+
+  private initControlsEventListeners(domElement: HTMLElement) {
     let userDragging = false;
     let timeoutId: number | undefined = undefined;
 
@@ -128,21 +160,23 @@ class ControlsManager implements IControlsManager {
       this.controls.removeEventListener("rest", onRest);
       userDragging = false;
       this.disableAutoRotate = false;
-      console.log("rest");
-
       timeoutId = window.setTimeout(() => {
-        this.ChangeState(ControlState.IDLE);
+        if (!userDragging) {
+          this.ChangeState(ControlState.IDLE);
+        }
       }, 2000);
     };
 
     this.controls.addEventListener("controlstart", () => {
       this.ChangeState(ControlState.CONTROLLED);
+      this.updateCursor(this.controls.currentAction, domElement);
       window.clearTimeout(timeoutId);
       this.controls.removeEventListener("rest", onRest);
       userDragging = true;
       this.disableAutoRotate = true;
     });
     this.controls.addEventListener("controlend", () => {
+      domElement.classList.remove("-dragging", "-moving", "-zoomIn");
       if (this.controls.active) {
         this.controls.addEventListener("rest", onRest);
       } else {
@@ -198,6 +232,7 @@ class ControlsManager implements IControlsManager {
     });
   }
   public lookAtPlane() {
+    if (this.lookAtPlanePercent.value == 1) return Promise.resolve();
     const beginningDistance = this.controls.distance;
     const targetZoom = 1;
     const beginningPolarAngle = this.controls.polarAngle;
@@ -233,7 +268,7 @@ class ControlsManager implements IControlsManager {
           .onComplete(() => {
             this.controls.minDistance = 0.55;
             this.controls.maxDistance = 10;
-            this.controls.maxPolarAngle = Math.PI / 2;
+            this.controls.maxPolarAngle = Math.PI / 2 - 0.1;
             res();
           })
       );
@@ -241,6 +276,8 @@ class ControlsManager implements IControlsManager {
   }
   public lookAtGlobe() {
     //todo, maybe save the plane pos and quat at this point, so it is more smooth
+    if (this.lookAtPlanePercent.value == 0) return Promise.resolve();
+
     this.globeQuat = this.planet.getPlaneQuaternion();
     const beginningDistance = this.controls.distance;
     const beginningPolarAngle = this.controls.polarAngle;
@@ -282,14 +319,8 @@ class ControlsManager implements IControlsManager {
     this.controls.rotateTo(randomPolar, randomA, true);
   }
 
-  public GetZoomLevel() {
-    return Util.mapRange(
-      this.controls.distance,
-      this.controls.minDistance,
-      this.controls.maxDistance,
-      0,
-      1
-    );
+  public GetDistance() {
+    return this.controls.distance;
   }
 
   update(_elapsedTime: number, deltaTime: number) {

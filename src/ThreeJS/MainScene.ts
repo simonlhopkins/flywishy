@@ -10,6 +10,10 @@ import Stats from "three/examples/jsm/libs/stats.module.js";
 import Hls from "hls.js";
 import { VisualizerOptions } from "../Store/UserStore";
 import PlaneMask from "./PlaneMask";
+
+import planetVertexShader from "./Shaders/planetVert.vs?raw";
+import planetFragmentShader from "./Shaders/planetFrag.fs?raw";
+import { Easing, Tween } from "@tweenjs/tween.js";
 interface EventListeners {
   OnCityUpdate(): void;
 }
@@ -21,6 +25,7 @@ class MainScene {
   private iframePlayer: YT.Player | null = null;
   private tweenManager = new TweenManager();
   private planet: Planet | null = null;
+  private hasBeenWarnedAboutMusic = false;
   constructor(
     mediaElement: HTMLMediaElement,
     iframeParent: HTMLDivElement,
@@ -58,7 +63,10 @@ class MainScene {
     parentDiv.appendChild(renderer.domElement);
     parentDiv.appendChild(this.stats.dom);
 
-    // this.toggleStats();
+    this.toggleStats();
+    toggleStatsCondtion(() => {
+      this.toggleStats();
+    });
     window.addEventListener("resize", () => {
       const parentDiv = document.getElementById("flyWishy")!;
       // Update camera aspect ratio
@@ -82,7 +90,7 @@ class MainScene {
   private initializeIframe(element: HTMLDivElement): Promise<YT.Player> {
     return new Promise<YT.Player>((res, rej) => {
       const player = new YT.Player(element, {
-        videoId: "btk4229qI04",
+        videoId: "uKu6TFNjkNc",
         playerVars: {
           rel: 0,
           mute: 1,
@@ -154,9 +162,6 @@ class MainScene {
       mediaElement.currentTime = timeToSet; // Set the current time of the stream
     };
     mediaElement.addEventListener("loadedmetadata", function () {
-      // element.play();
-      console.log("meta");
-
       initializeCurrentTime();
     });
     const size = new THREE.Vector2();
@@ -196,7 +201,7 @@ class MainScene {
       // renderer.render(planeScene, camera);
       this.musicTextureManager.update(elapsedTime, deltaTime);
       this.planet!.update(elapsedTime, deltaTime, planeMask.getDepthTexture()!);
-      this.planet!.updateZoomScale(controlsManager.GetZoomLevel());
+      this.planet!.updateZoomScale(controlsManager.GetDistance());
       planeMask.update(renderer, scene, camera, this.planet!.getPlanePos());
 
       this.tweenManager.update();
@@ -216,12 +221,18 @@ class MainScene {
   }
 
   public play() {
+    // if (!this.hasBeenWarnedAboutMusic) {
+    //   alert(
+    //     "music is about to play! Grab headphones if you want or don't idgaf"
+    //   );
+    // }
+
+    this.hasBeenWarnedAboutMusic = true;
     this.musicTextureManager.initialize().then(() => {
       if (this.iframePlayer) {
         this.iframePlayer.playVideo();
       }
       this.tweenManager.resume();
-      this.mediaElement.play();
       this.musicTextureManager.play();
     });
   }
@@ -230,7 +241,6 @@ class MainScene {
       this.iframePlayer.pauseVideo();
     }
     this.tweenManager.pause();
-    this.mediaElement.pause();
     this.musicTextureManager.pause();
   }
   async lookAtPlane() {
@@ -257,8 +267,6 @@ class MainScene {
     const whiteSquare = new THREE.TextureLoader().load(
       "./images/whiteSquare.png"
     );
-    const vertSource = await (await fetch("./shaders/planetVert.vs")).text();
-    const fragSource = await (await fetch("./shaders/planetFrag.fs")).text();
 
     const material = new THREE.RawShaderMaterial({
       uniforms: {
@@ -270,8 +278,8 @@ class MainScene {
         uTime: { value: 0.0 },
         uOptions: { value: 0.0 },
       },
-      vertexShader: vertSource,
-      fragmentShader: fragSource,
+      vertexShader: planetVertexShader,
+      fragmentShader: planetFragmentShader,
     });
     return material;
   }
@@ -300,7 +308,6 @@ class MainScene {
       fetch("./cities.json")
         .then((res) => res.json())
         .then((json) => {
-          console.log(json);
           const cities = json as CityData[];
           resolve(cities);
         })
@@ -309,6 +316,35 @@ class MainScene {
         });
     });
   }
+}
+
+function toggleStatsCondtion(onSuccess: () => void) {
+  let sPressCount = 0;
+  let lastPressTime = 0;
+  const maxDelay = 300; // max ms allowed between presses
+  const targetPresses = 5;
+
+  window.addEventListener("keydown", (e) => {
+    const now = Date.now();
+
+    if (e.key.toLowerCase() === "s") {
+      if (now - lastPressTime > maxDelay) {
+        // too slow, reset
+        sPressCount = 0;
+      }
+
+      sPressCount++;
+      lastPressTime = now;
+
+      if (sPressCount >= targetPresses) {
+        onSuccess();
+        sPressCount = 0; // reset after successful trigger
+      }
+    } else {
+      // wrong key, reset
+      sPressCount = 0;
+    }
+  });
 }
 
 export default MainScene;

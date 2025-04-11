@@ -104,14 +104,8 @@ class Planet {
     this.shaderOptions.flower = options.flower;
     this.shaderOptions.wishyMode = options.wishyMode;
   }
-  public updateZoomScale(zoom: number) {
-    const textScale = Util.mapRange(
-      THREE.MathUtils.smoothstep(zoom, 0, 0.5),
-      0,
-      1,
-      0.2,
-      1
-    );
+  public updateZoomScale(cameraDistance: number) {
+    const textScale = Util.mapRange(cameraDistance, 0, 15, 0.1, 2);
     this.cityLabels.forEach((item) => {
       item.setScale(textScale);
     });

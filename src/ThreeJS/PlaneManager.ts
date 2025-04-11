@@ -3,7 +3,8 @@ import TweenManager from "./TweenManager";
 import Planet from "./Planet";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { Util } from "../Util";
-import MusicTextureManager from "./MusicTextureManager";
+import vertexShader from "./Shaders/planeVert.vs?raw";
+import fragmentShader from "./Shaders/planeFrag.fs?raw";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -33,8 +34,6 @@ class PlaneManager {
     const texture = new THREE.TextureLoader().load(
       "./images/wishyPlaneTexture.png"
     );
-    const vertSource = await (await fetch("./shaders/planeVert.vs")).text();
-    const fragSource = await (await fetch("./shaders/planeFrag.fs")).text();
 
     const material = new THREE.RawShaderMaterial({
       uniforms: {
@@ -43,8 +42,8 @@ class PlaneManager {
         uWaveform: { value: texture },
         uTime: { value: 0.0 },
       },
-      vertexShader: vertSource,
-      fragmentShader: fragSource,
+      vertexShader,
+      fragmentShader,
     });
     return material;
   }
@@ -101,7 +100,7 @@ class PlaneManager {
     let angle = Math.acos(dot);
 
     const normalizedArcLength = Util.mapRange(angle, 0, Math.PI, 0, 1);
-    const time = Util.mapRange(normalizedArcLength, 0, 1, 2000, 8000);
+    const time = Util.mapRange(normalizedArcLength, 0, 1, 4000, 10000);
 
     const progress = { value: 0 };
 

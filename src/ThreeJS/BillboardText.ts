@@ -28,7 +28,7 @@ class BillboardText {
     // ctx.fillStyle = "blue";
     // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#32CD32";
+    ctx.fillStyle = "#fff";
     ctx.font = "36px Verdana, sans-serif";
     ctx.textAlign = "left"; // Align text to the left
     ctx.textBaseline = "middle"; // Anchor text to the bottom

@@ -139,7 +139,8 @@ void main() {
     oceanShiftColor = mix(color.rgb, oceanShiftColor, oceanShiftAmount);
 
 
-    float waveformValue =(texture2D(uWaveform, vec2(vUv.x, 0.)).r - 0.5) * 2.;
+    float mappedX = 1.0 - abs(2.0 * vUv.x - 1.0);
+    float waveformValue =(texture2D(uWaveform, vec2(mappedX, 0.)).r - 0.5) * 2.;
     vec2 waveformUV = (vUv *2.)-1.;
     float dist = abs(waveformUV.y * 3.) - abs(waveformValue);
     dist = getToggle(0) ? dist: 1.;

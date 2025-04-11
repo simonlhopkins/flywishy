@@ -1,5 +1,7 @@
+import { CityData } from "@/sharedTypes/CityData";
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import Events from "../Events";
 
 interface SongData {
   name: string;
@@ -17,8 +19,14 @@ const SongDatas: SongData[] = [
   { name: "portal", startTime: 896 },
   { name: "slide", startTime: 1114 },
 ];
+
+interface JourneyInfo {
+  fromCity: CityData;
+  toCity: CityData;
+}
 function NowPlaying() {
   const [currentSong, setCurrentSong] = useState<SongData | null>(null);
+  const [journeyInfo, setJourneyInfo] = useState<JourneyInfo | null>(null);
 
   useEffect(() => {
     const audio = document.getElementById("wishyAudio") as HTMLAudioElement;
@@ -40,17 +48,41 @@ function NowPlaying() {
     audio.addEventListener("timeupdate", updateCurrentSong);
     updateCurrentSong(); // run immediately too
 
+    function onCityChanged(
+      e: CustomEvent<{
+        fromCity: CityData;
+        toCity: CityData;
+      }>
+    ) {
+      setJourneyInfo({
+        fromCity: e.detail.fromCity,
+        toCity: e.detail.toCity,
+      });
+    }
+    Events.Get().addEventListener("cityChanged", onCityChanged);
+
     return () => {
       audio.removeEventListener("timeupdate", updateCurrentSong);
+      Events.Get().removeEventListener("cityChanged", onCityChanged);
     };
   }, []);
 
+  function journeyInfoToString(journeyInfo: JourneyInfo) {
+    return `${journeyInfo.fromCity.city} ➡️ ${journeyInfo.toCity.city}`;
+  }
   return (
     <StyledWrapper>
       {new Array(20).fill("").map((_, i) => (
-        <p key={i} className="ios-text">
-          NOW PLAYING {currentSong ? currentSong.name.toUpperCase() : "..."}
-        </p>
+        <div className="contentWrapper" key={i}>
+          <p className="ios-text">
+            NOW PLAYING {currentSong ? currentSong.name.toUpperCase() : "..."}
+          </p>
+          {journeyInfo && (
+            <p className="ios-text">
+              {journeyInfoToString(journeyInfo).toUpperCase()}
+            </p>
+          )}
+        </div>
       ))}
     </StyledWrapper>
   );
@@ -71,7 +103,9 @@ const StyledWrapper = styled.div`
   top: 0px;
   width: 100%;
   z-index: 100;
-  p {
+  .contentWrapper {
+    gap: 10px;
+    display: inline-flex;
     animation: ${scroll} 5s linear infinite;
     margin: 0;
     padding: 10px;

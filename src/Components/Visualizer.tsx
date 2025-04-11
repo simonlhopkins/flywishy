@@ -84,9 +84,6 @@ function Visualizer() {
           // do something if the page visibility changes to visible
         }
       });
-      Events.Get().addEventListener("cityChanged", (e) => {
-        // console.log(e.detail.fromCity, e.detail.toCity);
-      });
     }
   }, []);
 
@@ -242,7 +239,7 @@ const StyledWrapper = styled.div`
     height: 100%;
     width: 100%;
     display: flex;
-    display: none;
+    /* display: none; */
 
     align-items: center;
     justify-content: center;
@@ -262,10 +259,19 @@ const StyledWrapper = styled.div`
     position: relative;
     flex: 1;
     overflow: hidden;
-    background-image: url("/images/your_name_clouds.jpg");
+    /* background-image: url("/images/your_name_clouds.jpg"); */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    canvas {
+      cursor: grab;
+    }
+    canvas.-dragging {
+      cursor: grabbing;
+    }
+    canvas.-moving {
+      cursor: move;
+    }
   }
   .topBar,
   .bottomBar {
