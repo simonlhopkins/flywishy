@@ -129,17 +129,17 @@ function InFlightMenu({ showing, onClose }: Props) {
           <a href="https://winspear.biz/store/wishy" target="_blank">
             <p>Merch</p>
           </a>
-          <a
-            href="https://winspear.biz/wishy#:~:text=in%20high%20school.%22-,TOUR%20DATES,-MAY%209"
-            target="_blank"
-          >
+          <a href="https://www.wishyband.com/shows" target="_blank">
             <p>Tour</p>
           </a>
           <a href="https://wishy.bandcamp.com/" target="_blank">
             <p>Music</p>
           </a>
-          <a href="https://www.youtube.com/watch?v=v-JV3dyxvoM" target="_blank">
-            <p>More</p>
+          <a
+            href="https://www.youtube.com/watch?v=UbwUwiReGJ4&list=OLAK5uy_lX82q757nbYUKlA4bNoACMw8IG_gsjXIo"
+            target="_blank"
+          >
+            <p>Watch</p>
           </a>
         </div>
 

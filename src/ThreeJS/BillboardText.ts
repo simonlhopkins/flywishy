@@ -1,9 +1,11 @@
 import * as THREE from "three";
+import vertexShader from "./Shaders/labelVert.vs?raw";
+import fragmentShader from "./Shaders/labelFrag.fs?raw";
 
 class BillboardText {
   private width = 1000;
   private height = 200;
-  sprite: THREE.Sprite;
+  sprite: THREE.Mesh;
   constructor(text: string, scene: THREE.Scene) {
     this.sprite = this.createBillboardText(text, new THREE.Vector3(0, 0, 0));
   }
@@ -40,16 +42,29 @@ class BillboardText {
 
   private createBillboardText(text: string, position: THREE.Vector3) {
     const texture = this.createTextTexture(text);
-    const material = new THREE.SpriteMaterial({
-      map: texture,
+    const material = new THREE.RawShaderMaterial({
+      vertexShader,
+      fragmentShader,
       transparent: true,
+      uniforms: {
+        uTexture: { value: texture },
+        uPlaneDepthTexture: { value: texture },
+      },
     });
-    const sprite = new THREE.Sprite(material);
+    const sprite = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
     // sprite.center.set(0, 0);
     sprite.position.set(position.x, position.y, position.z);
     sprite.scale.set(this.width / this.height, 1, 1); // Adjust size
 
     return sprite;
+  }
+
+  update(camera: THREE.Camera, maskTexture: THREE.Texture) {
+    this.sprite.lookAt(camera.position);
+    this.sprite.quaternion.copy(camera.quaternion.clone());
+    (
+      this.sprite.material as THREE.RawShaderMaterial
+    ).uniforms.uPlaneDepthTexture.value = maskTexture;
   }
 }
 

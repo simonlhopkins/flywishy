@@ -196,7 +196,6 @@ class MusicTextureManager {
     const width = this.waveform.size;
     const textureHeight = 1;
     const initialData = new Uint8Array(width * textureHeight).fill(0);
-    console.log([...initialData]);
     const waveformTexture = new THREE.DataTexture(
       initialData, // Raw data array
       width, // Width of the texture

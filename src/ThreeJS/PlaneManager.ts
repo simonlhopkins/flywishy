@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import TweenManager from "./TweenManager";
 import Planet from "./Planet";
-import { Tween } from "@tweenjs/tween.js";
+import { Easing, Tween } from "@tweenjs/tween.js";
 import { Util } from "../Util";
 import MusicTextureManager from "./MusicTextureManager";
 
@@ -18,13 +18,13 @@ class PlaneManager {
     this.tweenManager = tweenManager;
     this.CreatePlaneMaterial().then((mat) => {
       this.planeMaterial = mat;
-
       this.planeMesh.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           // mesh.material = this.planeMaterial!;
           mesh.castShadow = true;
           mesh.receiveShadow = true;
+          child.layers.set(1);
         }
       });
     });
@@ -159,15 +159,16 @@ class PlaneManager {
   private async turnPlane(from: THREE.Quaternion, to: THREE.Quaternion) {
     const progress = { value: 0 };
     const onUpdate = () => {
-      this.planeMesh.quaternion.copy(from.slerp(to, progress.value));
+      this.planeMesh.quaternion.copy(from.clone().slerp(to, progress.value));
     };
     return new Promise((res, rej) => {
       this.tweenManager.add(
         new Tween(progress)
-          .to({ value: 1 }, 1000)
+          .to({ value: 1 }, 2000)
+          .easing(Easing.Sinusoidal.InOut)
           .onUpdate(onUpdate)
           .onComplete(res)
-          .delay(1000)
+          .delay(500)
       );
     });
   }

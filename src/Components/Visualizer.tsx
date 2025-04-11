@@ -178,7 +178,7 @@ function Visualizer() {
             }}
             className={clsx("ios-button", !isPlaneView && "inactive")}
           >
-            <p className={clsx("ios-text")}>Plane</p>
+            <p className={clsx("ios-text")}>Fly</p>
           </button>
           <button
             disabled={disableInput}
@@ -191,7 +191,7 @@ function Visualizer() {
             }}
             className={clsx("ios-button", isPlaneView && "inactive")}
           >
-            <p className={clsx("ios-text")}>World</p>
+            <p className={clsx("ios-text")}>Planet</p>
           </button>
         </div>
         <button

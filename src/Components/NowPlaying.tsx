@@ -8,7 +8,7 @@ interface SongData {
 
 const SongDatas: SongData[] = [
   {
-    name: "flydjsk;a",
+    name: "fly",
     startTime: 0,
   },
   { name: "planet popstar", startTime: 190 },

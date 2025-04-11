@@ -9,6 +9,7 @@ import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import Hls from "hls.js";
 import { VisualizerOptions } from "../Store/UserStore";
+import PlaneMask from "./PlaneMask";
 interface EventListeners {
   OnCityUpdate(): void;
 }
@@ -30,10 +31,7 @@ class MainScene {
     this.mediaElement = mediaElement;
     const parentDiv = document.getElementById("flyWishy")!;
     const scene = new THREE.Scene();
-    // const planeScene = new THREE.Scene();
-    // const light = new THREE.AmbientLight(0xffffff); // soft white light
-    // scene.add(light);
-    // planeScene.add(light);
+
     const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increase intensity
     scene.add(ambientLight);
     const light = new THREE.DirectionalLight(0xffffff, 1.5); // (color, intensity)
@@ -52,6 +50,7 @@ class MainScene {
       0.1,
       1000
     );
+    camera.layers.enable(1);
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
     });
@@ -59,7 +58,7 @@ class MainScene {
     parentDiv.appendChild(renderer.domElement);
     parentDiv.appendChild(this.stats.dom);
 
-    this.toggleStats();
+    // this.toggleStats();
     window.addEventListener("resize", () => {
       const parentDiv = document.getElementById("flyWishy")!;
       // Update camera aspect ratio
@@ -184,6 +183,8 @@ class MainScene {
     );
     this.controlsManager = controlsManager;
 
+    const planeMask = new PlaneMask(size.width, size.height, camera, scene);
+
     const clock = new THREE.Clock();
 
     clock.start();
@@ -191,20 +192,19 @@ class MainScene {
     const animate = () => {
       const deltaTime = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
-      renderer.autoClear = false;
-      renderer.clear();
 
-      renderer.render(scene, camera);
-      renderer.clearDepth();
       // renderer.render(planeScene, camera);
       this.musicTextureManager.update(elapsedTime, deltaTime);
-      this.planet!.update(elapsedTime, deltaTime);
+      this.planet!.update(elapsedTime, deltaTime, planeMask.getDepthTexture()!);
       this.planet!.updateZoomScale(controlsManager.GetZoomLevel());
+      planeMask.update(renderer, scene, camera, this.planet!.getPlanePos());
 
       this.tweenManager.update();
       //this needs to happen last!!
       controlsManager.update(elapsedTime, deltaTime);
       this.stats.update();
+      renderer.clear();
+      renderer.render(scene, camera);
     };
     renderer.setAnimationLoop(animate);
   }

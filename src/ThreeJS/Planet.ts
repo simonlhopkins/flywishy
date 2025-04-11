@@ -75,34 +75,23 @@ class Planet {
 
     this.scene.add(this.planetMesh);
 
-    // cities.forEach((item) => {
-    //   const label = `📍${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
-    //     item.iso2
-    //   )}`;
-    //   const newText = new BillboardText(label, scene);
-    //   this.cityLabels.push(newText);
+    cities.forEach((item) => {
+      const label = `📍${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
+        item.iso2
+      )}`;
+      const newText = new BillboardText(label, scene);
+      this.cityLabels.push(newText);
 
-    //   const pos = Planet.latLonToUnitVector(item.lat, item.lng);
-    //   newText.setPosition(pos.multiplyScalar(this.radius));
-    //   // newText.sprite.material.depthWrite = false;
-    //   newText.sprite.material.depthTest = false;
-    //   newText.sprite.renderOrder = 10;
-    //   scene.add(newText.sprite);
-    // });
+      const pos = Planet.latLonToUnitVector(item.lat, item.lng);
+      newText.setPosition(pos.multiplyScalar(this.radius));
+      (newText.sprite.material as THREE.Material).depthWrite = false;
+      (newText.sprite.material as THREE.Material).depthTest = false;
+      scene.add(newText.sprite);
+    });
 
     this.startCity = cities[0];
     this.endCity = cities[0];
 
-    //depth order
-    planeMesh.renderOrder = 0;
-    // planeMesh.traverse((object) => {
-    //   object.renderOrder = 0;
-    //   const mesh = object as THREE.Mesh;
-    //   if (mesh.material) {
-    //     // (mesh.material as THREE.Material).depthTest = false;
-    //     mesh.renderOrder = 0;
-    //   }
-    // });
     scene.add(planeMesh);
 
     //billboard
@@ -225,7 +214,11 @@ class Planet {
     return new THREE.Vector3(x, y, z); // Return as a Three.js Vector3
   }
 
-  update(elapsedTime: number, deltaTime: number) {
+  update(
+    elapsedTime: number,
+    deltaTime: number,
+    planeMaskTexture: THREE.Texture
+  ) {
     //uniforms
     this.planetMaterial.uniforms.uTime.value = elapsedTime;
     this.planetMaterial.uniforms.uOptions.value = this.shaderOptions.encode();
@@ -249,19 +242,20 @@ class Planet {
       this.musicTextureManager.getWaveformTexture()
     );
     //cities
-    // this.cityLabels.forEach((billboardCity) => {
-    //   const direction = new THREE.Vector3();
-    //   direction
-    //     .subVectors(this.camera.position, billboardCity.getPosition())
-    //     .normalize();
-    //   this.raycaster.set(billboardCity.getPosition(), direction);
-    //   const intersects = this.raycaster.intersectObject(this.planetMesh);
-    //   if (intersects.length > 0) {
-    //     billboardCity.setVisible(false);
-    //   } else {
-    //     billboardCity.setVisible(true);
-    //   }
-    // });
+    this.cityLabels.forEach((billboardCity) => {
+      const direction = new THREE.Vector3();
+      direction
+        .subVectors(this.camera.position, billboardCity.getPosition())
+        .normalize();
+      this.raycaster.set(billboardCity.getPosition(), direction);
+      const intersects = this.raycaster.intersectObject(this.planetMesh);
+      if (intersects.length > 0) {
+        billboardCity.setVisible(false);
+      } else {
+        billboardCity.setVisible(true);
+      }
+      billboardCity.update(this.camera, planeMaskTexture);
+    });
   }
 }
 
