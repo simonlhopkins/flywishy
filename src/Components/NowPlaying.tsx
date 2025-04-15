@@ -104,7 +104,7 @@ const StyledWrapper = styled.div`
   .contentWrapper {
     gap: 10px;
     display: inline-flex;
-    animation: ${scroll} 5s linear infinite;
+    animation: ${scroll} 10s linear infinite;
     margin: 0;
     padding: 0 10px;
     text-wrap: nowrap;
