@@ -107,6 +107,7 @@ class Planet {
     this.createPlaneTween(cities);
     this.tweenManager.pause();
     this.initStoreListeners();
+    this.onDarkModeChange(useUserStore.getInitialState().darkMode);
   }
 
   private initStoreListeners() {

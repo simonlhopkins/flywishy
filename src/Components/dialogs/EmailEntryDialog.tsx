@@ -45,6 +45,7 @@ function EmailEntryDialog({ ref }: Props) {
       ref.current!.close();
     } catch (error) {
       console.error("Error submitting form:", error);
+      ref.current!.close();
     }
   };
   return (
@@ -52,7 +53,7 @@ function EmailEntryDialog({ ref }: Props) {
       <img className={clsx("gloss")} src="/images/Gloss.svg" alt="" />
       <h1 className={clsx("ios-text")}>Enter your email</h1>
       <p>sign up for the wishy mailing list to enter the site</p>
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
