@@ -107,17 +107,13 @@ class Planet {
     this.createPlaneTween(cities);
     this.tweenManager.pause();
     this.initStoreListeners();
-    this.onDarkModeChange(useUserStore.getInitialState().darkMode);
   }
 
   private initStoreListeners() {
-    // onKeyDown("d", () => {
-    //   useUserStore.setState({ darkMode: !useUserStore.getState().darkMode });
-    // });
-    // useUserStore.subscribe((state) => {
-    //   this.onDarkModeChange(state.darkMode);
-    // });
-    // this.onDarkModeChange(useUserStore.getInitialState().darkMode);
+    useUserStore.subscribe((state) => {
+      this.onDarkModeChange(state.darkMode);
+    });
+    this.onDarkModeChange(useUserStore.getInitialState().darkMode);
   }
   private onDarkModeChange(newDarkMode: boolean) {
     this.planetMaterial.uniforms.uTexture.value = newDarkMode
