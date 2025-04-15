@@ -110,13 +110,13 @@ class Planet {
   }
 
   private initStoreListeners() {
-    onKeyDown("d", () => {
-      useUserStore.setState({ darkMode: !useUserStore.getState().darkMode });
-    });
-    useUserStore.subscribe((state) => {
-      this.onDarkModeChange(state.darkMode);
-    });
-    this.onDarkModeChange(useUserStore.getInitialState().darkMode);
+    // onKeyDown("d", () => {
+    //   useUserStore.setState({ darkMode: !useUserStore.getState().darkMode });
+    // });
+    // useUserStore.subscribe((state) => {
+    //   this.onDarkModeChange(state.darkMode);
+    // });
+    // this.onDarkModeChange(useUserStore.getInitialState().darkMode);
   }
   private onDarkModeChange(newDarkMode: boolean) {
     this.planetMaterial.uniforms.uTexture.value = newDarkMode
