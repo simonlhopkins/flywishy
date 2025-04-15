@@ -2,6 +2,7 @@ import { CityData } from "@/sharedTypes/CityData";
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import Events from "../Events";
+import useUserStore from "../Store/UserStore";
 
 interface SongData {
   name: string;
@@ -10,7 +11,7 @@ interface SongData {
 
 const SongDatas: SongData[] = [
   {
-    name: "fly",
+    name: "planet popstar",
     startTime: 0,
   },
   { name: "planet popstar", startTime: 190 },
@@ -27,6 +28,8 @@ interface JourneyInfo {
 function NowPlaying() {
   const [currentSong, setCurrentSong] = useState<SongData | null>(null);
   const [journeyInfo, setJourneyInfo] = useState<JourneyInfo | null>(null);
+
+  const { isPlaying } = useUserStore();
 
   useEffect(() => {
     const audio = document.getElementById("wishyAudio") as HTMLAudioElement;
@@ -80,6 +83,9 @@ function NowPlaying() {
           <p className="ios-text journeyText">
             {journeyInfo && journeyInfoToString(journeyInfo).toUpperCase()}
           </p>
+          <p className="ios-text">
+            {isPlaying ? "TRY LOOKING AROUND" : "PRESS PLAY TO LISTEN"}
+          </p>
         </div>
       ))}
     </StyledWrapper>
@@ -112,10 +118,8 @@ const StyledWrapper = styled.div`
     text-align: center;
     p {
       overflow: hidden;
+      width: 22rem;
     }
-  }
-  .journeyText {
-    width: 24rem;
   }
 `;
 

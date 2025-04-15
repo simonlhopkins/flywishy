@@ -234,7 +234,7 @@ class ControlsManager implements IControlsManager {
   public lookAtPlane() {
     if (this.lookAtPlanePercent.value == 1) return Promise.resolve();
     const beginningDistance = this.controls.distance;
-    const targetZoom = 1;
+    const targetZoom = 1.5;
     const beginningPolarAngle = this.controls.polarAngle;
     const beginningAzimuthAngle = this.controls.azimuthAngle;
     return new Promise<void>((res) => {
