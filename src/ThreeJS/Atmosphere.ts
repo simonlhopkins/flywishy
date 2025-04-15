@@ -22,7 +22,7 @@ class Atmosphere {
     this.scene = scene;
     this.planet = planet;
     const colors = [0xe8c53a, 0x3a609a, 0x00cda8, 0xf55545, 0xcb1059];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 8; i++) {
       const newSatelliteData: SatelliteData = {
         mesh: this.createSatellite(),
         orbitQuaternion: new THREE.Quaternion().setFromUnitVectors(
@@ -32,7 +32,7 @@ class Atmosphere {
         offset: Math.random() * Math.PI * 2,
         radius:
           this.planet.getRadius() + Util.mapRange(Math.random(), 0, 1, 0.4, 1),
-        speed: Util.mapRange(Math.random(), 0, 1, 0.3, 1),
+        speed: Util.mapRange(Math.random(), 0, 1, 0.1, 0.4),
         fromColor: new THREE.Color().setHex(
           Util.getRandomElement(colors) as number
         ),

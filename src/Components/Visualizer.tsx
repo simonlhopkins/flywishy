@@ -112,7 +112,6 @@ function Visualizer() {
   };
   let musicSrc =
     "https://d1d621jepmseha.cloudfront.net/WishyPlanetPopstarStream.mp3";
-  musicSrc = "/video/monaLisa.mp4";
   return (
     <StyledWrapper>
       <EmailEntryDialog ref={emailDialogRef} />
@@ -124,7 +123,7 @@ function Visualizer() {
         }}
       />
       <InFlightMenu showing={showMenu} onClose={() => setShowMenu(false)} />
-      <video
+      <audio
         style={{ width: "100%" }}
         id="wishyAudio"
         hidden
@@ -133,7 +132,7 @@ function Visualizer() {
         preload="metadata"
         loop
         src={musicSrc}
-      ></video>
+      ></audio>
       {/* <div className={clsx("topBar", "ios-navigationBar")}>
         <h1 className={clsx("ios-text")}>PDX to HND</h1>
         <button

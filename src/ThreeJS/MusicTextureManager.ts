@@ -84,10 +84,12 @@ class MusicTextureManager {
       Tone.connect(this.audioNode, this.fft);
       Tone.connect(this.audioNode, this.waveform);
     }
+    console.log("play!!");
     const now = Tone.now();
     this.gainNode.gain.setValueAtTime(0, now);
     console.log(now);
     this.gainNode.gain.linearRampTo(1, 0.5, now);
+    console.log(this.mediaElement);
     this.mediaElement.play();
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {
