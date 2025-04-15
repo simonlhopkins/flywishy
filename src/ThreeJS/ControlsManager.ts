@@ -1,7 +1,7 @@
 import CameraControls from "camera-controls";
 import * as THREE from "three";
 import Planet from "./Planet";
-import { Util } from "../Util";
+import { Util } from "../Util/Util";
 import TweenManager from "./TweenManager";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { ACTION } from "camera-controls/dist/types";

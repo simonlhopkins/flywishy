@@ -67,6 +67,9 @@ float sdSegment(vec2 p, vec2 a, vec2 b) {
     return length(pa - ba * h);
 }
 
+vec3 gradientColor(vec3 colorStart, vec3 colorEnd, float t) {
+    return mix(colorStart, colorEnd, clamp(t, 0.0, 1.0));
+}
 float sdW(vec2 p) {
     // Normalize space to center and scale to fit in unit square
     p = p * 2.0 - 1.0; // remap to [-1, 1]
@@ -148,10 +151,12 @@ void main() {
     float mappedX = 1.0 - abs(2.0 * vUv.x - 1.0);
     float waveformValue =(texture2D(uWaveform, vec2(mappedX, 0.)).r - 0.5) * 2.;
     vec2 waveformUV = (vUv *2.)-1.;
+    // waveformUV.y *=3.;    
     float dist = abs(waveformUV.y * 3.) - abs(waveformValue);
     dist = getToggle(0) ? dist: 1.;
     vec3 finalColor = oceanShiftColor + c * 0.5;
-    finalColor = mix(1.-finalColor, finalColor, smoothstep(0.01, 0.01, dist));
+    vec3 gradientColor = gradientColor(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), dist);
+    finalColor = mix(1.-finalColor, finalColor, smoothstep(0.1, 0.11, dist));
     // finalColor = vec3(getToggle(0));
     gl_FragColor = vec4(finalColor, 1.0);
 

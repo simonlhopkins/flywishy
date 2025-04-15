@@ -1,4 +1,4 @@
-import { Util } from "../Util";
+import { Util } from "../Util/Util";
 import EnergyAnalyzer from "./EnergyAnalyzer";
 const analysisTime = 3;
 class BinAnalyzer {

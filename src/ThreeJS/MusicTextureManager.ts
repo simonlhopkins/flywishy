@@ -1,5 +1,5 @@
 import * as Tone from "tone";
-import { Util } from "../Util";
+import { Util } from "../Util/Util";
 import * as THREE from "three";
 import BinAnalyzer from "../MusicAnalyzers/BinAnalyzer";
 

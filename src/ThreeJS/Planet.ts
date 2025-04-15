@@ -1,15 +1,16 @@
 import * as THREE from "three";
 import TweenManager from "./TweenManager";
-import { Tween } from "@tweenjs/tween.js";
 import BillboardText from "./BillboardText";
 import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
-import { Util } from "../Util";
-import ThreeJSUtils from "./ThreeJSUtils";
+import { Util } from "../Util/Util";
 import Atmosphere from "./Atmosphere";
 import PlaneManager from "./PlaneManager";
-import MainScene from "./MainScene";
 import Events from "../Events";
+import planetVertexShader from "./Shaders/planetVert.vs?raw";
+import planetFragmentShader from "./Shaders/planetFrag.fs?raw";
+import useUserStore from "../Store/UserStore";
+import { onKeyDown } from "../Util/OnKeyDown";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -51,12 +52,19 @@ class Planet {
   private radius = 4;
   private planeManager: PlaneManager;
   private shaderOptions = new PlanetShaderOptions();
+
+  private dayEarthTexture = new THREE.TextureLoader().load(
+    "./images/8k_earth_daymap_small.jpg"
+  );
+  private nightEarthTexture = new THREE.TextureLoader().load(
+    "./images/worldAtNight.jpg"
+  );
+
   constructor(
     scene: THREE.Scene,
     camera: THREE.Camera,
     tweenManager: TweenManager,
     musicTextureManager: MusicTextureManager,
-    planetMaterial: THREE.ShaderMaterial,
     planeMesh: THREE.Group,
     cities: CityData[]
   ) {
@@ -68,7 +76,7 @@ class Planet {
     this.planeManager = new PlaneManager(this.tweenManager, planeMesh);
     this.musicTextureManager = musicTextureManager;
     const geometry = new THREE.SphereGeometry(this.radius, 32, 16);
-    this.planetMaterial = planetMaterial;
+    this.planetMaterial = this.CreatePlanetMaterial();
     this.planetMesh = new THREE.Mesh(geometry, this.planetMaterial);
     //debug
     this.planetMesh.position.set(0, 0, 0);
@@ -98,6 +106,51 @@ class Planet {
 
     this.createPlaneTween(cities);
     this.tweenManager.pause();
+    this.initStoreListeners();
+  }
+
+  private initStoreListeners() {
+    onKeyDown("d", () => {
+      useUserStore.setState({ darkMode: !useUserStore.getState().darkMode });
+    });
+    useUserStore.subscribe((state) => {
+      this.onDarkModeChange(state.darkMode);
+    });
+    this.onDarkModeChange(useUserStore.getInitialState().darkMode);
+  }
+  private onDarkModeChange(newDarkMode: boolean) {
+    this.planetMaterial.uniforms.uTexture.value = newDarkMode
+      ? this.nightEarthTexture
+      : this.dayEarthTexture;
+    this.planetMaterial.needsUpdate = true;
+  }
+  private CreatePlanetMaterial() {
+    const texture = new THREE.TextureLoader().load("./images/worldAtNight.jpg");
+    const winspearSDF = new THREE.TextureLoader().load(
+      "./images/winspearSDF.png"
+    );
+    const noiseTexture = new THREE.TextureLoader().load(
+      "./images/noiseTexture.png"
+    );
+    const whiteSquare = new THREE.TextureLoader().load(
+      "./images/whiteSquare.png"
+    );
+
+    const material = new THREE.RawShaderMaterial({
+      uniforms: {
+        uTexture: { value: texture },
+        uDisplacementMap: { value: noiseTexture },
+        uWinspearSDF: { value: winspearSDF },
+        uDotPosition: { value: new THREE.Vector3(0, 0, 0) },
+        uEnergyHistory: { value: whiteSquare },
+        uWaveform: { value: whiteSquare },
+        uTime: { value: 0.0 },
+        uOptions: { value: 0.0 },
+      },
+      vertexShader: planetVertexShader,
+      fragmentShader: planetFragmentShader,
+    });
+    return material;
   }
   public updateShaderOptions(options: IPlanetShaderOptions) {
     this.shaderOptions.waveformEnabled = options.waveformEnabled;
@@ -105,7 +158,7 @@ class Planet {
     this.shaderOptions.wishyMode = options.wishyMode;
   }
   public updateZoomScale(cameraDistance: number) {
-    const textScale = Util.mapRange(cameraDistance, 0, 15, 0.2, 1.8);
+    const textScale = Util.mapRange(cameraDistance, 0, 15, 0.2, 1.2);
     this.cityLabels.forEach((item) => {
       item.setScale(textScale);
     });
@@ -184,6 +237,8 @@ class Planet {
     const rightVec = new THREE.Vector3()
       .crossVectors(forwardVec, upVec)
       .normalize();
+    //rotate
+    // rightVec.applyAxisAngle(upVec, -Math.PI / 2);
     //lol the actual forward vec I guess may not be entirely perpendicular to the upvector so this just makes sure that it will be!
     forwardVec = new THREE.Vector3().crossVectors(upVec, rightVec);
 

@@ -16,6 +16,7 @@ export interface VisualizerOptions extends IPlanetShaderOptions {
 interface UserStore {
   user: User | null;
   hasSeenIntro: boolean;
+  darkMode: boolean;
   visualizerOptions: VisualizerOptions;
   isPlaying: boolean;
   airplaneMode: boolean;
@@ -25,6 +26,7 @@ interface UserStore {
   setVisualizerOptions: (options: VisualizerOptions) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   setAirplaneMode: (airplaneMode: boolean) => void;
+  setDarkMode: (darkMode: boolean) => void;
 }
 
 // LocalStorage persistence handler
@@ -40,6 +42,7 @@ const useUserStore = create<UserStore>((set) => {
     user: loadOrDefault<User | null>("user", null),
     hasSeenIntro: loadOrDefault<boolean>("hasSeenIntro", false),
     airplaneMode: true,
+    darkMode: false,
     visualizerOptions: {
       waveformEnabled: false,
       flower: false,
@@ -69,6 +72,9 @@ const useUserStore = create<UserStore>((set) => {
     },
     setAirplaneMode: (airplaneMode) => {
       set({ airplaneMode });
+    },
+    setDarkMode: (darkMode) => {
+      set({ darkMode });
     },
   };
 });

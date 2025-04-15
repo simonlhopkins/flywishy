@@ -2,7 +2,7 @@ import * as THREE from "three";
 import TweenManager from "./TweenManager";
 import Planet from "./Planet";
 import { Easing, Tween } from "@tweenjs/tween.js";
-import { Util } from "../Util";
+import { Util } from "../Util/Util";
 import vertexShader from "./Shaders/planeVert.vs?raw";
 import fragmentShader from "./Shaders/planeFrag.fs?raw";
 

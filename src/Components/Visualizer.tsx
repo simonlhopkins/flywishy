@@ -33,11 +33,10 @@ function Visualizer() {
     hasSeenIntro,
     visualizerOptions,
     isPlaying,
-    airplaneMode,
+    darkMode,
     user,
+    setDarkMode,
     setIsPlaying,
-    setVisualizerOptions,
-    setAirplaneMode,
   } = useUserStore();
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
@@ -60,6 +59,12 @@ function Visualizer() {
       sceneRef.current!.updateVisualizerOptions(visualizerOptions);
     }
   }, [visualizerOptions]);
+
+  // useEffect(() => {
+  //   if (sceneRef.current) {
+  //     sceneRef.current!.updateVisualizerOptions(visualizerOptions);
+  //   }
+  // }, [darkMode]);
 
   useEffect(() => {
     if (sceneRef.current == null) {
@@ -105,7 +110,9 @@ function Visualizer() {
       console.log("cheat code not found.");
     }
   };
-
+  let musicSrc =
+    "https://d1d621jepmseha.cloudfront.net/WishyPlanetPopstarStream.mp3";
+  musicSrc = "/video/monaLisa.mp4";
   return (
     <StyledWrapper>
       <EmailEntryDialog ref={emailDialogRef} />
@@ -117,7 +124,7 @@ function Visualizer() {
         }}
       />
       <InFlightMenu showing={showMenu} onClose={() => setShowMenu(false)} />
-      <audio
+      <video
         style={{ width: "100%" }}
         id="wishyAudio"
         hidden
@@ -125,8 +132,8 @@ function Visualizer() {
         crossOrigin="anonymous"
         preload="metadata"
         loop
-        src="https://d1d621jepmseha.cloudfront.net/WishyPlanetPopstarStream.mp3"
-      ></audio>
+        src={musicSrc}
+      ></video>
       {/* <div className={clsx("topBar", "ios-navigationBar")}>
         <h1 className={clsx("ios-text")}>PDX to HND</h1>
         <button
@@ -141,7 +148,15 @@ function Visualizer() {
       <NowPlaying />
       {loading && <div className="loading">loading...</div>}
       <div id="flyWishy" hidden={loading}>
-        <div id="iframe-parent">
+        <img
+          className="backgroundImg"
+          style={{ display: darkMode ? "block" : "none" }}
+          src="/images/nightsky2.gif"
+        />
+        <div
+          id="iframe-parent"
+          style={{ display: !darkMode ? "block" : "none" }}
+        >
           <div id="iframe" ref={iframeParentRef}></div>
         </div>
       </div>
@@ -191,17 +206,38 @@ function Visualizer() {
             <p className={clsx("ios-text")}>Planet</p>
           </button>
         </div>
-        <button
-          disabled={disableInput}
-          onClick={() => {
-            setIsPlaying(!isPlaying);
-          }}
-          className={clsx("ios-button", "viewButton")}
-        >
-          <img
-            src={isPlaying ? "/images/ios-pause.svg" : "/images/ios-play.svg"}
-          ></img>
-        </button>
+        <div className="rightButtonParent">
+          <button
+            disabled={disableInput}
+            onClick={() => {
+              setDarkMode(!darkMode);
+            }}
+            className={clsx("ios-button", "viewButton")}
+          >
+            <img
+              src={
+                darkMode
+                  ? "/images/icons/lightModeSun.svg"
+                  : "/images/icons/darkModeMoon.svg"
+              }
+            ></img>
+          </button>
+          <button
+            disabled={disableInput}
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+            }}
+            className={clsx("ios-button", "viewButton")}
+          >
+            <img
+              src={
+                isPlaying
+                  ? "/images/icons/ios-pause.svg"
+                  : "/images/icons/ios-play.svg"
+              }
+            ></img>
+          </button>
+        </div>
       </div>
     </StyledWrapper>
   );
@@ -212,6 +248,15 @@ const StyledWrapper = styled.div`
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+
+  .backgroundImg {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
   .loading {
     display: flex;
     align-items: center;
@@ -250,7 +295,7 @@ const StyledWrapper = styled.div`
     height: 100%;
     width: 100%;
     display: flex;
-    /* display: none; */
+    display: none;
 
     align-items: center;
     justify-content: center;
@@ -286,6 +331,7 @@ const StyledWrapper = styled.div`
   }
   .topBar,
   .bottomBar {
+    gap: 5px;
     display: flex;
     align-items: center;
     z-index: 50;
@@ -293,6 +339,10 @@ const StyledWrapper = styled.div`
     padding: 10px;
     box-sizing: border-box;
     justify-content: space-between;
+    .rightButtonParent {
+      display: flex;
+      gap: inherit;
+    }
   }
   .viewButton {
     font-size: 2rem;

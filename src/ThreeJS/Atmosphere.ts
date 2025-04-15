@@ -1,7 +1,7 @@
 import Planet from "./Planet";
 import * as THREE from "three";
 import ThreeJSUtils from "./ThreeJSUtils";
-import { Util } from "../Util";
+import { Util } from "../Util/Util";
 
 interface SatelliteData {
   mesh: THREE.Mesh;

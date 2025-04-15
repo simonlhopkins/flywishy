@@ -8,12 +8,9 @@ import { CityData } from "sharedTypes/CityData";
 import MusicTextureManager from "./MusicTextureManager";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import Hls from "hls.js";
-import { VisualizerOptions } from "../Store/UserStore";
+import useUserStore, { VisualizerOptions } from "../Store/UserStore";
 import PlaneMask from "./PlaneMask";
 
-import planetVertexShader from "./Shaders/planetVert.vs?raw";
-import planetFragmentShader from "./Shaders/planetFrag.fs?raw";
-import { Easing, Tween } from "@tweenjs/tween.js";
 interface EventListeners {
   OnCityUpdate(): void;
 }
@@ -26,6 +23,7 @@ class MainScene {
   private tweenManager = new TweenManager();
   private planet: Planet | null = null;
   private hasBeenWarnedAboutMusic = false;
+  private isDarkMode: boolean = false;
   constructor(
     mediaElement: HTMLMediaElement,
     iframeParent: HTMLDivElement,
@@ -37,9 +35,10 @@ class MainScene {
     const parentDiv = document.getElementById("flyWishy")!;
     const scene = new THREE.Scene();
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increase intensity
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Increase intensity
     scene.add(ambientLight);
-    const light = new THREE.DirectionalLight(0xffffff, 1.5); // (color, intensity)
+    const lightColor = 0x0000ff;
+    const light = new THREE.DirectionalLight(lightColor, 1.5); // (color, intensity)
 
     // Set light direction
     light.position.set(5, 10, 5); // X, Y, Z position
@@ -82,10 +81,22 @@ class MainScene {
     this.initialize(scene, camera, renderer, mediaElement, iframeParent).then(
       onReady
     );
+
+    const onDarkModeChange = (darkMode: boolean) => {
+      ambientLight.intensity = darkMode ? 0.1 : 1;
+      light.color.set(darkMode ? 0x0000ff : 0xffffff);
+    };
+    useUserStore.subscribe((state) => {
+      onDarkModeChange(state.darkMode);
+    });
+    onDarkModeChange(useUserStore.getInitialState().darkMode);
   }
   private toggleStats() {
     this.stats.dom.style.display =
       this.stats.dom.style.display == "none" ? "block" : "none";
+  }
+  public onDarkMode(darkMode: boolean) {
+    this.isDarkMode = darkMode;
   }
   private initializeIframe(element: HTMLDivElement): Promise<YT.Player> {
     return new Promise<YT.Player>((res, rej) => {
@@ -111,7 +122,6 @@ class MainScene {
 
   private async initializeHLSStream(element: HTMLMediaElement) {
     const url = "https://d1d621jepmseha.cloudfront.net/wishyStream/video.m3u8";
-    console.log("initialize stream");
 
     return new Promise<void>((res, rej) => {
       if (Hls.isSupported()) {
@@ -166,17 +176,17 @@ class MainScene {
     });
     const size = new THREE.Vector2();
     renderer.getSize(size);
-    this.iframePlayer = await this.initializeIframe(iframeParent);
+    if (iframeParent) {
+      this.iframePlayer = await this.initializeIframe(iframeParent);
+    }
     const cities = await this.LoadCities();
     const planeModel = await this.LoadPlaneModel();
-    const planetMaterial = await this.CreatePlanetMaterial();
 
     this.planet = new Planet(
       scene,
       camera,
       this.tweenManager,
       this.musicTextureManager,
-      planetMaterial,
       planeModel,
       cities
     );
@@ -257,43 +267,15 @@ class MainScene {
     this.musicTextureManager.reset();
   }
 
-  async CreatePlanetMaterial() {
-    const texture = new THREE.TextureLoader().load(
-      "./images/8k_earth_daymap_small.jpg"
-    );
-    const winspearSDF = new THREE.TextureLoader().load(
-      "./images/winspearSDF.png"
-    );
-    const noiseTexture = new THREE.TextureLoader().load(
-      "./images/noiseTexture.png"
-    );
-    const whiteSquare = new THREE.TextureLoader().load(
-      "./images/whiteSquare.png"
-    );
-
-    const material = new THREE.RawShaderMaterial({
-      uniforms: {
-        uTexture: { value: texture },
-        uDisplacementMap: { value: noiseTexture },
-        uWinspearSDF: { value: winspearSDF },
-        uDotPosition: { value: new THREE.Vector3(0, 0, 0) },
-        uEnergyHistory: { value: whiteSquare },
-        uWaveform: { value: whiteSquare },
-        uTime: { value: 0.0 },
-        uOptions: { value: 0.0 },
-      },
-      vertexShader: planetVertexShader,
-      fragmentShader: planetFragmentShader,
-    });
-    return material;
-  }
-
   async LoadPlaneModel(): Promise<THREE.Group> {
+    const modelPath = "./models/plane/";
+    const fileName = "wishy_plane.glb";
+
     return new Promise((resolve, reject) => {
       const loader = new GLTFLoader();
 
-      loader.setPath("./models/plane/").load(
-        "wishy_plane.glb",
+      loader.setPath(modelPath).load(
+        fileName,
         (gltf) => {
           const plane = gltf.scene;
           const planeScale = 0.01;
