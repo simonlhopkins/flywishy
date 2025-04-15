@@ -232,9 +232,7 @@ class MainScene {
 
   public play() {
     if (!this.hasBeenWarnedAboutMusic) {
-      alert(
-        "music is about to play! Grab headphones if you want or don't idgaf"
-      );
+      alert("music is about to play! Grab headphones, or don't!");
     }
 
     this.hasBeenWarnedAboutMusic = true;
