@@ -10,6 +10,7 @@ import InFlightMenu from "./InFlightMenu";
 import EmailEntryDialog from "./dialogs/EmailEntryDialog";
 import NowPlaying from "./NowPlaying";
 import Loading from "./Loading";
+import GoogleAnalyticsManager from "../GoogleAnalyticsManager";
 
 const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
 
@@ -161,6 +162,9 @@ function Visualizer() {
         <button
           disabled={disableInput}
           onClick={() => {
+            if (!showMenu) {
+              GoogleAnalyticsManager.MenuOpened();
+            }
             setShowMenu((prev) => !prev);
           }}
           className={clsx("ios-button", "viewButton")}
@@ -184,6 +188,7 @@ function Visualizer() {
           <button
             disabled={disableInput}
             onClick={() => {
+              GoogleAnalyticsManager.PlanetToggleClicked();
               setIsPlaneView(false);
               setDisableInput(true);
               sceneRef.current!.lookAtGlobe().then(() => {
@@ -199,6 +204,7 @@ function Visualizer() {
           <button
             disabled={disableInput}
             onClick={() => {
+              GoogleAnalyticsManager.DarkModeClicked();
               setDarkMode(!darkMode);
             }}
             className={clsx("ios-button", "viewButton")}

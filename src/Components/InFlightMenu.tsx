@@ -3,6 +3,7 @@ import styled from "styled-components";
 import useUserStore from "../Store/UserStore";
 import { useRef } from "react";
 import CopyrightDialog from "./dialogs/CopyrightDialog";
+import GoogleAnalyticsManager from "../GoogleAnalyticsManager";
 
 interface Props {
   showing: boolean;
@@ -63,6 +64,7 @@ function InFlightMenu({ showing, onClose }: Props) {
               !visualizerOptions.waveformEnabled && "deactivated"
             )}
             onClick={() => {
+              GoogleAnalyticsManager.WaveformClicked();
               setVisualizerOptions({
                 ...visualizerOptions,
                 waveformEnabled: !visualizerOptions.waveformEnabled,
@@ -74,6 +76,7 @@ function InFlightMenu({ showing, onClose }: Props) {
           <button
             className={clsx(!visualizerOptions.flower && "deactivated")}
             onClick={() => {
+              GoogleAnalyticsManager.FlowerClicked();
               setVisualizerOptions({
                 ...visualizerOptions,
                 flower: !visualizerOptions.flower,
@@ -85,6 +88,7 @@ function InFlightMenu({ showing, onClose }: Props) {
           <button
             className={clsx(!visualizerOptions.wishyMode && "deactivated")}
             onClick={() => {
+              GoogleAnalyticsManager.WinspearClicked();
               setVisualizerOptions({
                 ...visualizerOptions,
                 wishyMode: !visualizerOptions.wishyMode,
@@ -95,6 +99,7 @@ function InFlightMenu({ showing, onClose }: Props) {
           </button>
           <button
             onClick={() => {
+              GoogleAnalyticsManager.PlayPauseMenuClicked();
               setIsPlaying(!isPlaying);
             }}
           >
@@ -105,7 +110,12 @@ function InFlightMenu({ showing, onClose }: Props) {
               alt=""
             />
           </button>
-          <button className="deactivated smoking">
+          <button
+            className="deactivated smoking"
+            onClick={() => {
+              GoogleAnalyticsManager.SmokingClicked();
+            }}
+          >
             <img
               src="/images/icons/smoking.svg"
               alt=""
@@ -114,6 +124,7 @@ function InFlightMenu({ showing, onClose }: Props) {
           </button>
           <button
             onClick={() => {
+              GoogleAnalyticsManager.AirplaneModeClicked();
               setAirplaneMode(!airplaneMode);
             }}
             className={clsx(!airplaneMode && "deactivated")}
@@ -374,7 +385,7 @@ const StyledWrapper = styled.div`
     border: 4px solid #5ecca7;
     border-radius: 10px;
     margin: 0px 10px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     a {
       display: flex;
       align-items: center;
