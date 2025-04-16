@@ -9,6 +9,7 @@ import IntroDialog from "./dialogs/IntroDialog";
 import InFlightMenu from "./InFlightMenu";
 import EmailEntryDialog from "./dialogs/EmailEntryDialog";
 import NowPlaying from "./NowPlaying";
+import Loading from "./Loading";
 
 const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
 
@@ -27,7 +28,7 @@ function Visualizer() {
   const [isPlaneView, setIsPlaneView] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [disableInput, setDisableInput] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const {
     hasSeenIntro,
@@ -133,20 +134,9 @@ function Visualizer() {
         loop
         src={musicSrc}
       ></audio>
-      {/* <div className={clsx("topBar", "ios-navigationBar")}>
-        <h1 className={clsx("ios-text")}>PDX to HND</h1>
-        <button
-          onClick={() => {
-            cheatDialogRef.current!.showModal();
-          }}
-          className={clsx("ios-button", "viewButton")}
-        >
-          <p className={clsx("ios-text")}>Cheat</p>
-        </button>
-      </div> */}
       <NowPlaying />
-      {loading && <div className="loading">loading...</div>}
-      <div id="flyWishy" hidden={loading}>
+      <div id="flyWishy">
+        <Loading showing={loading} />
         <img
           className="backgroundImg"
           style={{ display: darkMode ? "block" : "none" }}
@@ -256,12 +246,7 @@ const StyledWrapper = styled.div`
     height: 100%;
     z-index: -1;
   }
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-  }
+
   .ios-modal .buttonContainer {
     display: inline-flex;
     width: 100%;
@@ -318,6 +303,7 @@ const StyledWrapper = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+
     canvas {
       cursor: grab;
     }
