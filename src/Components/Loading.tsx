@@ -5,7 +5,6 @@ interface Props {
   showing: boolean;
 }
 function Loading({ showing }: Props) {
-  console.log(showing);
   return (
     <StyledWrapper className={clsx(showing && "showing")}>
       <img src="/images/wonda.png" alt="" />

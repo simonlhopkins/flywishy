@@ -7,7 +7,6 @@ class GoogleAnalyticsManager {
       | Gtag.EventParams
       | undefined
   ) {
-    console.log("google analytic event: " + name);
     gtag("event", name, params);
   }
   static DarkModeClicked() {

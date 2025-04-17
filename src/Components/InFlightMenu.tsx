@@ -137,13 +137,13 @@ function InFlightMenu({ showing, onClose }: Props) {
           </button>
         </div>
         <div className="buttonArea">
-          <a href="https://winspear.biz/store/wishy" target="_blank">
+          <a href="https://lnk.to/planet-popstar/winspear" target="_blank">
             <p>Merch</p>
           </a>
           <a href="https://www.wishyband.com/shows" target="_blank">
             <p>Tour</p>
           </a>
-          <a href="https://wishy.bandcamp.com/" target="_blank">
+          <a href="https://lnk.to/planet-popstar" target="_blank">
             <p>Music</p>
           </a>
           <a
@@ -308,14 +308,7 @@ const StyledWrapper = styled.div`
       z-index: 10;
     }
   }
-  @media (hover: hover) and (pointer: fine) {
-    button {
-      transition: transform 100ms;
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-  }
+
   .iconArea {
     grid-row: 5 / 8;
     grid-column: 1 / -2;
@@ -326,13 +319,9 @@ const StyledWrapper = styled.div`
     justify-items: center;
     gap: 10px;
     button {
-      /* height: 100%; */
       height: 100%;
       max-width: 100%;
       overflow: hidden;
-      /* @media only screen and (max-width: 600px) {
-        width: 3rem;
-      } */
       aspect-ratio: 1;
       border-radius: 999px;
       border: 5px solid green;
@@ -342,12 +331,14 @@ const StyledWrapper = styled.div`
       &.smoking {
         cursor: not-allowed;
       }
+
       display: flex;
       justify-content: center;
       align-items: center;
       user-select: none;
       touch-action: manipulation;
       img {
+        pointer-events: none;
         height: 80%;
         filter: invert(0%) sepia(96%) saturate(7476%) hue-rotate(44deg)
           brightness(92%) contrast(98%);
@@ -356,6 +347,14 @@ const StyledWrapper = styled.div`
       &:active {
         background-color: burlywood;
         transform: scale(0.97);
+      }
+      @media (hover: hover) and (pointer: fine) {
+        & {
+          transition: transform 100ms;
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
       }
       &.deactivated {
         border-color: red;

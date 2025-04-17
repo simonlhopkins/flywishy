@@ -26,6 +26,14 @@ class MusicTextureManager {
     this.waveform.smoothing = 1;
     this.updateWaveformTexture();
     this.updateEnergyHistoryTexture();
+    document.addEventListener("visibilitychange", (event) => {
+      if (document.visibilityState === "hidden") {
+        // this.audioNode?.disconnect();
+        // this.audioNode = null;
+        // console.log("disconnecting audio node");
+        // this.nodesInitialized = false;
+      }
+    });
   }
 
   public async initialize() {
@@ -34,10 +42,10 @@ class MusicTextureManager {
       this.audioNode = Tone.getContext().createMediaElementSource(
         this.mediaElement
       );
-      const sourceNode = this.micNode;
+      const sourceNode = this.audioNode;
       Tone.connect(sourceNode, this.fft);
       Tone.connect(sourceNode, this.waveform);
-      // Tone.connect(sourceNode, this.gainNode);
+      Tone.connect(sourceNode, this.gainNode);
       this.mediaElement.muted = false;
 
       this.gainNode.toDestination();
@@ -67,7 +75,6 @@ class MusicTextureManager {
     // Set current value (needed if there's automation already going on)
     this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
 
-    // Fade to 0 over 1 second
     const fadeTime = 0.3;
     this.gainNode.gain.linearRampTo(0, fadeTime, now);
     this.pauseTimeout = window.setTimeout(() => {
@@ -84,12 +91,9 @@ class MusicTextureManager {
       Tone.connect(this.audioNode, this.fft);
       Tone.connect(this.audioNode, this.waveform);
     }
-    console.log("play!!");
     const now = Tone.now();
     this.gainNode.gain.setValueAtTime(0, now);
-    console.log(now);
     this.gainNode.gain.linearRampTo(1, 0.5, now);
-    console.log(this.mediaElement);
     this.mediaElement.play();
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {
