@@ -47,7 +47,7 @@ class MusicTextureManager {
       Tone.connect(sourceNode, this.waveform);
       Tone.connect(sourceNode, this.gainNode);
       this.mediaElement.muted = false;
-
+      this.gainNode.gain.setValueAtTime(0, Tone.now());
       this.gainNode.toDestination();
       this.nodesInitialized = true;
     }
@@ -93,7 +93,7 @@ class MusicTextureManager {
     }
     const now = Tone.now();
     this.gainNode.gain.setValueAtTime(0, now);
-    this.gainNode.gain.linearRampTo(1, 0.5, now);
+    this.gainNode.gain.linearRampTo(1, 0.8, now);
     this.mediaElement.play();
   }
   private getAverageEnergy(fft: Float32Array, low: number, high: number) {

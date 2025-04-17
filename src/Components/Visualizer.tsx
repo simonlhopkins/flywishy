@@ -104,7 +104,6 @@ function Visualizer() {
 
   const onCheatSubmitted = (cheatText: string) => {
     const parsedCode = cheatText.replaceAll(" ", "").toUpperCase();
-    console.log(parsedCode);
 
     if (cheatCodes.includes(parsedCode)) {
       console.log("success");

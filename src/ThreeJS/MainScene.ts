@@ -237,7 +237,6 @@ class MainScene {
 
     this.hasBeenWarnedAboutMusic = true;
     this.musicTextureManager.initialize().then(() => {
-      console.log("initialized!!");
       if (this.iframePlayer) {
         this.iframePlayer.playVideo();
       }
