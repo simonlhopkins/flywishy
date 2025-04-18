@@ -234,19 +234,18 @@ class MainScene {
     }
   }
 
-  public play() {
+  public async play() {
     if (!this.hasBeenWarnedAboutMusic) {
       alert("music is about to play! Grab headphones, or don't!");
+      this.hasBeenWarnedAboutMusic = true;
     }
-
-    this.hasBeenWarnedAboutMusic = true;
-    this.musicTextureManager.initialize().then(() => {
-      if (this.iframePlayer) {
-        this.iframePlayer.playVideo();
-      }
-      this.tweenManager.resume();
-      this.musicTextureManager.play();
-    });
+    //for some reason you need to play before you initialize????
+    this.musicTextureManager.play();
+    await this.musicTextureManager.initialize();
+    if (this.iframePlayer) {
+      this.iframePlayer.playVideo();
+    }
+    this.tweenManager.resume();
   }
   public pause() {
     if (this.iframePlayer) {

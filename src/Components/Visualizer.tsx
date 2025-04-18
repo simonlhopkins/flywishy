@@ -11,7 +11,7 @@ import EmailEntryDialog from "./dialogs/EmailEntryDialog";
 import NowPlaying from "./NowPlaying";
 import Loading from "./Loading";
 import GoogleAnalyticsManager from "../GoogleAnalyticsManager";
-
+import * as Tone from "tone";
 const cheatCodes = ["WISHYCOFFEEHOUSE1", "ERIC", "2208"];
 
 export interface ButtonCallbacks {
@@ -50,10 +50,17 @@ function Visualizer() {
   }
   useEffect(() => {
     if (!hasSeenIntro && user) {
-      introDialogRef.current!.showModal();
+      try {
+        introDialogRef.current!.showModal();
+      } catch (e) {}
     }
+    console.log(emailDialogRef.current);
     if (user == null) {
-      emailDialogRef.current!.showModal();
+      try {
+        emailDialogRef.current!.showModal();
+      } catch (e) {
+        console.log(e);
+      }
     }
   }, [hasSeenIntro, user]);
 
@@ -222,7 +229,17 @@ function Visualizer() {
           </button>
           <button
             disabled={disableInput}
-            onClick={() => {
+            onClick={async () => {
+              // const wishyAudio = document.getElementById(
+              //   "wishyAudio"
+              // ) as HTMLAudioElement;
+              // try {
+              //   await wishyAudio.play(); // this must happen before any `await`
+              //   console.log("Audio played!");
+              // } catch (e) {
+              //   console.warn("wishyAudio.play() failed:", e);
+              // }
+              // // Now safe to call async stuff
               setIsPlaying(!isPlaying);
             }}
             className={clsx("ios-button", "viewButton")}

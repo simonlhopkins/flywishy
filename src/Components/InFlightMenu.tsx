@@ -269,6 +269,7 @@ const StyledWrapper = styled.div`
       grid-column: 1 / -2; /* Span all columns */
       display: flex;
       align-items: center;
+      justify-content: right;
       flex-direction: row-reverse;
       height: 100%;
       width: 100%;
