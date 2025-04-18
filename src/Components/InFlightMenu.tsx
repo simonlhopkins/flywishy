@@ -51,7 +51,6 @@ function InFlightMenu({ showing, onClose }: Props) {
               </p>
             )}
           </div>
-          <div className="socialsParent"></div>
         </div>
         <div className="side">
           <button onClick={onClose}>
@@ -149,7 +148,6 @@ function InFlightMenu({ showing, onClose }: Props) {
               GoogleAnalyticsManager.DarkModeClicked();
               setDarkMode(!darkMode);
             }}
-            className={clsx(!airplaneMode && "deactivated")}
           >
             <img
               src={
@@ -280,34 +278,7 @@ const StyledWrapper = styled.div`
     grid-template-columns: 1fr;
     background-color: #5ecca7;
     position: relative;
-    .socialsParent {
-      grid-row: 4 / 5;
-      grid-column: 1 / -2; /* Span all columns */
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      z-index: 100;
-      a {
-        right: 0px;
-        transition: transform 100ms;
-        height: 100%;
-        @media (hover: hover) and (pointer: fine) {
-          &:hover {
-            transform: scale(1.1) rotate(5deg);
-          }
-        }
-      }
-      img {
-        width: 80px;
-        @media (max-width: 768px) {
-          width: 50px;
-        }
 
-        /* transform: translateY(5%); */
-        filter: brightness(0) saturate(100%) invert(96%) sepia(42%)
-          saturate(221%) hue-rotate(2deg) brightness(105%) contrast(92%);
-      }
-    }
     .planeImgParent {
       grid-row: 3 / 4;
       position: relative;
