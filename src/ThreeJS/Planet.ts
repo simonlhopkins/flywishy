@@ -290,12 +290,7 @@ class Planet {
       deltaTime,
       this.musicTextureManager.getBinValues()
     );
-    this.planeManager.updateMaterial(
-      elapsedTime,
-      deltaTime,
-      this.musicTextureManager.getEnergyHistoryTexture(),
-      this.musicTextureManager.getWaveformTexture()
-    );
+
     //cities
     this.cityLabels.forEach((billboardCity) => {
       const direction = new THREE.Vector3();

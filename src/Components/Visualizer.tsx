@@ -211,7 +211,7 @@ function Visualizer() {
           </button>
         </div>
         <div className="rightButtonParent">
-          <button
+          {/* <button
             disabled={disableInput}
             onClick={() => {
               GoogleAnalyticsManager.DarkModeClicked();
@@ -226,7 +226,7 @@ function Visualizer() {
                   : "/images/icons/darkModeMoon.svg"
               }
             ></img>
-          </button>
+          </button> */}
           <button
             disabled={disableInput}
             onClick={async () => {

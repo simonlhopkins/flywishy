@@ -21,11 +21,13 @@ const links: LinkData[] = [
 ];
 function InFlightMenu({ showing, onClose }: Props) {
   const {
+    darkMode,
     visualizerOptions,
     setVisualizerOptions,
     isPlaying,
     setIsPlaying,
     airplaneMode,
+    setDarkMode,
     setAirplaneMode,
   } = useUserStore();
 
@@ -49,14 +51,7 @@ function InFlightMenu({ showing, onClose }: Props) {
               </p>
             )}
           </div>
-          <div className="socialsParent">
-            <a
-              href="https://www.instagram.com/wishy_music_777/?hl=en"
-              target="_blank"
-            >
-              <img src="/images/icons/instagram.svg" alt="" />
-            </a>
-          </div>
+          <div className="socialsParent"></div>
         </div>
         <div className="side">
           <button onClick={onClose}>
@@ -105,6 +100,12 @@ function InFlightMenu({ showing, onClose }: Props) {
           >
             <img src="/images/icons/winspear.png" alt="" />
           </button>
+          <a
+            href="https://www.instagram.com/wishy_music_777/?hl=en"
+            target="_blank"
+          >
+            <img src="/images/icons/instagram.svg" />
+          </a>
           <button
             onClick={() => {
               GoogleAnalyticsManager.PlayPauseMenuClicked();
@@ -141,6 +142,22 @@ function InFlightMenu({ showing, onClose }: Props) {
               src="/images/icons/airplane.svg"
               alt=""
               style={{ transform: "translateX(-5%) translateY(5%)" }}
+            />
+          </button>
+          <button
+            onClick={() => {
+              GoogleAnalyticsManager.DarkModeClicked();
+              setDarkMode(!darkMode);
+            }}
+            className={clsx(!airplaneMode && "deactivated")}
+          >
+            <img
+              src={
+                darkMode
+                  ? "/images/icons/lightModeSun.svg"
+                  : "/images/icons/darkModeMoon.svg"
+              }
+              alt=""
             />
           </button>
         </div>
@@ -264,21 +281,16 @@ const StyledWrapper = styled.div`
     background-color: #5ecca7;
     position: relative;
     .socialsParent {
-      position: absolute;
       grid-row: 4 / 5;
       grid-column: 1 / -2; /* Span all columns */
       display: flex;
-      align-items: center;
-      justify-content: right;
       flex-direction: row-reverse;
-      height: 100%;
-      width: 100%;
+      align-items: center;
       z-index: 100;
       a {
+        right: 0px;
         transition: transform 100ms;
-
         height: 100%;
-
         @media (hover: hover) and (pointer: fine) {
           &:hover {
             transform: scale(1.1) rotate(5deg);
@@ -286,8 +298,11 @@ const StyledWrapper = styled.div`
         }
       }
       img {
-        height: 100%;
-        width: 100%;
+        width: 80px;
+        @media (max-width: 768px) {
+          width: 50px;
+        }
+
         /* transform: translateY(5%); */
         filter: brightness(0) saturate(100%) invert(96%) sepia(42%)
           saturate(221%) hue-rotate(2deg) brightness(105%) contrast(92%);
@@ -353,16 +368,18 @@ const StyledWrapper = styled.div`
     grid-column: 1 / -2;
     display: grid;
     grid-template-rows: 1fr 1fr;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     align-items: center;
     justify-items: center;
     gap: 10px;
-    button {
+    button,
+    a {
       height: 100%;
       max-width: 100%;
       overflow: hidden;
       aspect-ratio: 1;
       border-radius: 999px;
+      box-sizing: border-box;
       border: 5px solid green;
       background-color: transparent;
       color: inherit;
@@ -379,8 +396,7 @@ const StyledWrapper = styled.div`
       img {
         pointer-events: none;
         height: 80%;
-        filter: invert(0%) sepia(96%) saturate(7476%) hue-rotate(44deg)
-          brightness(92%) contrast(98%);
+        filter: brightness(0) saturate(100%);
       }
 
       &:active {
