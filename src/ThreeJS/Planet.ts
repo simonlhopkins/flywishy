@@ -88,7 +88,7 @@ class Planet {
 
     this.scene.add(this.planetMesh);
 
-    cities.slice(0, 30).forEach((item) => {
+    cities.forEach((item) => {
       const label = `📍${item.city.toLocaleLowerCase()}${this.countryCodeToEmoji(
         item.iso2
       )}`;

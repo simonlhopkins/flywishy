@@ -16,6 +16,16 @@ class PlaneManager {
   constructor(tweenManager: TweenManager, planeMesh: THREE.Group) {
     this.planeMesh = planeMesh;
     this.tweenManager = tweenManager;
+
+    this.planeMesh.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        // mesh.material = this.planeMaterial!;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        child.layers.set(1);
+      }
+    });
   }
 
   getPlanePos() {

@@ -13,7 +13,7 @@ fs.createReadStream("./tools/worldcities.csv")
 function createFilteredList(results: CityData[]) {
   const cityMap = new Map<string, CityData[]>();
   // const final = results.slice(5000, 5050);
-  results.slice(0, 100).forEach((cityData) => {
+  results.forEach((cityData) => {
     if (!cityMap.has(cityData.country)) {
       cityMap.set(cityData.country, []);
     }
@@ -23,6 +23,7 @@ function createFilteredList(results: CityData[]) {
     }
   });
   const final = Array.from(cityMap.values()).flat();
+
   console.log("generated " + final.length + " cities");
   fs.writeFile("./public/cities.json", JSON.stringify(final), "utf8", () => {});
 }

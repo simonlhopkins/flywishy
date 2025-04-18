@@ -188,7 +188,7 @@ class MainScene {
       this.tweenManager,
       this.musicTextureManager,
       planeModel,
-      cities
+      cities.slice(0, 50)
     );
     const controlsManager = new ControlsManager(
       this.planet,
