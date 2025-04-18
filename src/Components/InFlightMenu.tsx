@@ -49,6 +49,14 @@ function InFlightMenu({ showing, onClose }: Props) {
               </p>
             )}
           </div>
+          <div className="socialsParent">
+            <a
+              href="https://www.instagram.com/wishy_music_777/?hl=en"
+              target="_blank"
+            >
+              <img src="/images/icons/instagram.svg" alt="" />
+            </a>
+          </div>
         </div>
         <div className="side">
           <button onClick={onClose}>
@@ -255,7 +263,35 @@ const StyledWrapper = styled.div`
     grid-template-columns: 1fr;
     background-color: #5ecca7;
     position: relative;
+    .socialsParent {
+      position: absolute;
+      grid-row: 4 / 5;
+      grid-column: 1 / -2; /* Span all columns */
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
+      height: 100%;
+      width: 100%;
+      z-index: 100;
+      a {
+        transition: transform 100ms;
 
+        height: 100%;
+
+        @media (hover: hover) and (pointer: fine) {
+          &:hover {
+            transform: scale(1.1) rotate(5deg);
+          }
+        }
+      }
+      img {
+        height: 100%;
+        width: 100%;
+        /* transform: translateY(5%); */
+        filter: brightness(0) saturate(100%) invert(96%) sepia(42%)
+          saturate(221%) hue-rotate(2deg) brightness(105%) contrast(92%);
+      }
+    }
     .planeImgParent {
       grid-row: 3 / 4;
       position: relative;
@@ -388,6 +424,7 @@ const StyledWrapper = styled.div`
     margin: 0px 10px;
     font-size: 1.2rem;
     a {
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -409,9 +446,11 @@ const StyledWrapper = styled.div`
         width: 50%;
         object-fit: contain;
       }
-      &:hover {
-        z-index: 1;
-        transform: scale(1.1) rotate(5deg);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          z-index: 1;
+          transform: scale(1.1) rotate(5deg);
+        }
       }
     }
   }
