@@ -164,7 +164,7 @@ class ControlsManager implements IControlsManager {
         if (!userDragging) {
           this.ChangeState(ControlState.IDLE);
         }
-      }, 2000);
+      }, 4000);
     };
 
     this.controls.addEventListener("controlstart", () => {

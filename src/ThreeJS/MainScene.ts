@@ -224,9 +224,13 @@ class MainScene {
     renderer.setAnimationLoop(animate);
   }
 
-  public updateVisualizerOptions(visualizerOptions: VisualizerOptions) {
+  public updateVisualizerOptions(
+    visualizerOptions: VisualizerOptions,
+    airplaneMode: boolean
+  ) {
+    console.log("updating visualizer options");
     if (this.planet) {
-      this.planet.updateShaderOptions(visualizerOptions);
+      this.planet.updateShaderOptions(visualizerOptions, airplaneMode);
     }
   }
 

@@ -155,7 +155,9 @@ function InFlightMenu({ showing, onClose }: Props) {
         </div>
 
         <div className="creditsArea">
-          <a href="">credits</a>
+          <a href="/credits" target="blank">
+            credits
+          </a>
           <a
             href=""
             onClick={(e) => {

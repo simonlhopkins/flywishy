@@ -10,7 +10,6 @@ import Events from "../Events";
 import planetVertexShader from "./Shaders/planetVert.vs?raw";
 import planetFragmentShader from "./Shaders/planetFrag.fs?raw";
 import useUserStore from "../Store/UserStore";
-import { onKeyDown } from "../Util/OnKeyDown";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -24,9 +23,15 @@ class PlanetShaderOptions implements IPlanetShaderOptions {
   waveformEnabled: boolean = false;
   flower: boolean = false;
   wishyMode: boolean = false;
+  airplaneMode: boolean = true;
   encode(): number {
     let packed = 0;
-    const toggles = [this.waveformEnabled, this.flower, this.wishyMode];
+    const toggles = [
+      this.waveformEnabled,
+      this.flower,
+      this.wishyMode,
+      this.airplaneMode,
+    ];
     for (let i = 0; i < toggles.length; i++) {
       if (toggles[i]) {
         packed += Math.pow(2, i); // Instead of bitwise shift, use power of 2
@@ -149,10 +154,14 @@ class Planet {
     });
     return material;
   }
-  public updateShaderOptions(options: IPlanetShaderOptions) {
+  public updateShaderOptions(
+    options: IPlanetShaderOptions,
+    airplaneMode: boolean
+  ) {
     this.shaderOptions.waveformEnabled = options.waveformEnabled;
     this.shaderOptions.flower = options.flower;
     this.shaderOptions.wishyMode = options.wishyMode;
+    this.shaderOptions.airplaneMode = airplaneMode;
   }
   public updateZoomScale(cameraDistance: number) {
     const textScale = Util.mapRange(cameraDistance, 0, 15, 0.2, 1.2);

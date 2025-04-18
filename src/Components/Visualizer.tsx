@@ -37,6 +37,7 @@ function Visualizer() {
     isPlaying,
     darkMode,
     user,
+    airplaneMode,
     setDarkMode,
     setIsPlaying,
   } = useUserStore();
@@ -58,9 +59,12 @@ function Visualizer() {
 
   useEffect(() => {
     if (sceneRef.current) {
-      sceneRef.current!.updateVisualizerOptions(visualizerOptions);
+      sceneRef.current!.updateVisualizerOptions(
+        visualizerOptions,
+        airplaneMode
+      );
     }
-  }, [visualizerOptions]);
+  }, [visualizerOptions, airplaneMode]);
 
   // useEffect(() => {
   //   if (sceneRef.current) {
