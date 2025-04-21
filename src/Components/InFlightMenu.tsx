@@ -4,6 +4,7 @@ import useUserStore from "../Store/UserStore";
 import { useRef } from "react";
 import CopyrightDialog from "./dialogs/CopyrightDialog";
 import GoogleAnalyticsManager from "../GoogleAnalyticsManager";
+import CreditsDialog from "./dialogs/CreditsDialog";
 
 interface Props {
   showing: boolean;
@@ -32,10 +33,11 @@ function InFlightMenu({ showing, onClose }: Props) {
   } = useUserStore();
 
   const copyrightDialogRef = useRef<HTMLDialogElement>(null);
-
+  const creditsRef = useRef<HTMLDialogElement>(null);
   return (
     <>
       <CopyrightDialog ref={copyrightDialogRef} />
+      <CreditsDialog ref={creditsRef} />
       <StyledWrapper className={clsx(showing && "showing")}>
         <div className="overlay"></div>
         <div className="headerArea">
@@ -178,8 +180,17 @@ function InFlightMenu({ showing, onClose }: Props) {
         </div>
 
         <div className="creditsArea">
-          <a href="/credits" target="blank">
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              creditsRef.current!.showModal();
+            }}
+          >
             credits
+          </a>
+          <a href="https://winspear.biz/" target="_blank">
+            winspear
           </a>
           <a
             href=""
@@ -233,7 +244,7 @@ const StyledWrapper = styled.div`
     z-index: 2;
   }
   &.showing {
-    transform: translateX(-20px) rotateZ(-5deg);
+    transform: translateX(-20px) translateY(-10px) rotateZ(-5deg);
   }
   .side {
     grid-row: -1 / 1;
@@ -367,6 +378,7 @@ const StyledWrapper = styled.div`
       img {
         pointer-events: none;
         height: 80%;
+        max-width: 100%;
         filter: brightness(0) saturate(100%);
       }
 
@@ -446,8 +458,25 @@ const StyledWrapper = styled.div`
   .creditsArea {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     grid-row: -2/ -1;
+    padding: 0 10px;
     grid-column: -2 / 1;
+    color: #5ecca7;
+    font-size: 1.2rem;
+    a:visited {
+      color: #5ecca7;
+    }
+
+    /* mouse over link */
+    a:hover {
+      color: hotpink;
+    }
+
+    /* selected link */
+    a:active {
+      color: #5ecca7;
+    }
   }
 `;
 
