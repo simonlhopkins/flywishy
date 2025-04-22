@@ -148,14 +148,17 @@ function Visualizer() {
       <NowPlaying />
       <div id="flyWishy">
         <Loading showing={loading} />
-        <img
+        <div
           className="backgroundImg"
-          style={{ display: darkMode ? "block" : "none" }}
-          src="/images/nightsky2.gif"
+          style={{
+            backgroundImage: darkMode
+              ? "url(/images/nightsky2.gif)"
+              : "url(/images/albumCover.png)",
+          }}
         />
         <div
           id="iframe-parent"
-          style={{ display: !darkMode ? "block" : "none" }}
+          // style={{ display: !darkMode ? "block" : "none" }}
         >
           <div id="iframe" ref={iframeParentRef}></div>
         </div>
@@ -265,9 +268,11 @@ const StyledWrapper = styled.div`
   height: 100%;
 
   .backgroundImg {
+    background-repeat: repeat;
+    background-size: contain;
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     z-index: -1;
@@ -309,7 +314,6 @@ const StyledWrapper = styled.div`
 
     align-items: center;
     justify-content: center;
-    background-color: black;
     iframe {
       width: 100%;
       height: 100%;
