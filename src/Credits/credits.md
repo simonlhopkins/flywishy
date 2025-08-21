@@ -36,7 +36,7 @@ Camera controls made by [yomotsu](https://github.com/yomotsu/camera-controls/tre
 This website was created by [Simon](https://simonlhopkins.github.io/). (simonlhopkins[at]gmail[dot]com)
 
 - [games](https://simonlhopkins.itch.io/)
-- [blog](https://cluberic.netlify.app/)
+- [CHECK OUT CLUB ERIC!!!](https://cluberic.netlify.app/)
 
 Feel free to take a peek at the source code on [github](https://github.com/simonlhopkins/flywishy).
 

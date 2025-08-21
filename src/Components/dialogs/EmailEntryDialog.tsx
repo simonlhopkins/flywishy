@@ -75,6 +75,15 @@ function EmailEntryDialog({ ref }: Props) {
           >
             <p className={clsx("ios-text")}>Submit</p>
           </button>
+          <button
+            onClick={() => {
+              setUser("nothanks");
+              ref.current!.close();
+            }}
+            className={clsx("ios-button", "primary")}
+          >
+            <p className={clsx("ios-text")}>No Thanks</p>
+          </button>
         </div>
       </form>
     </dialog>
