@@ -59,7 +59,16 @@ function InFlightMenu({ showing, onClose }: Props) {
             <img src="/images/closeX.svg" alt="" />
           </button>
           <div>
-            <p>Planet Popstar coming out April 25!</p>
+            <p>
+              Planet Popstar{" "}
+              <a
+                id="outNow"
+                target="_blank"
+                href="https://lnk.to/planet-popstar"
+              >
+                out now!!
+              </a>
+            </p>
           </div>
         </div>
         <div className="iconArea">
@@ -229,6 +238,20 @@ const StyledWrapper = styled.div`
   /* border-radius: 20px; */
   > div {
     padding: 10px;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+  }
+  #outNow {
+    color: red;
+    display: inline-block;
+    animation: pulse 1.5s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
   }
   .overlay {
     position: absolute;
